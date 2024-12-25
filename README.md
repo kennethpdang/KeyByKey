@@ -1,2 +1,2 @@
 # KeyByKey
-A application to help users remember particular things.
+This application is suppose to be similar to Bible Memory.
