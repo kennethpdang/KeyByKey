@@ -23,10 +23,11 @@ const getCollection = async (request, response) => {
 };
 
 const createCollection = async (request, response) => {
-    const { title, description, flashcards } = request.body;
+    const { title, description } = request.body;
 
     try {
-        const collection = await Collection.create({ title, description, flashcard });
+        const collection = await Collection.create({ title, description, flashcards: [] });
+        response.status(200).json(collection);
     } catch (error) {
         response.status(400).json({ error: error.message })
     }

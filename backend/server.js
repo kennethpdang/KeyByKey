@@ -8,7 +8,7 @@ const morgan = require('morgan');
 const app = express();
 
 // Import Routes
-const collectionRoutes = require('./routes/collection.js');
+const collectionRoutes = require('./routes/collections.js');
 const flashcardRoutes = require('./routes/flashcards.js');
 
 // Logging Stuff

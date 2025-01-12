@@ -14,13 +14,13 @@ const getFlashcard = async (request, response) => {
         return response.status(404).json({error: "No such flashcard!"});
     }
     
-    const flashCard = await Flashcard.findById(id);
+    const flashcard = await Flashcard.findById(id);
 
     if(!flashcard) {
         return response.status(404).json({error: "No such flashcard!"});
     }
 
-    response.status(200).json(flashCard);
+    response.status(200).json(flashcard);
 };
 
 const createFlashcard = async (request, response) => {
@@ -79,7 +79,7 @@ const updateFlashcard = async (request, response) => {
     });
 
     if(!flashcard) {
-        return request.status(400).json({error: "No such workout"});
+        return request.status(400).json({error: "No such flashcard!"});
     }
 
     response.status(200).json(flashcard);
