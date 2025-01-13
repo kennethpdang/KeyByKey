@@ -1,40 +1,63 @@
-const Collection = require('../models/collectionModel.js');
-const mongoose = require('mongoose');
+const collectionService = require('../services/collectionService');
 
 const getCollections = async (request, response) => {
-    const collections = await Collection.find({}).sort({createdAt: -1});
-    response.status(200).json(collections);
+    try {
+        const collections = await collectionService.getAllCollections();
+        return response.status(200).json(collections);
+    } catch (error) {
+        return response.status(500).json({ error: error.message });
+    }
 };
 
 const getCollection = async (request, response) => {
     const { id } = request.params;
 
-    if(!mongoose.Types.ObjectId.isValid(id)) {
-        return response.status(400).json({error: "No such collection!"});
+    try {
+        const collection = await collectionService.getCollectionById(id);
+        return response.status(200).json(collection);
+    } catch (error) {
+        if (error.message.includes('Invalid collection ID')) {
+            return response.status(400).json({ error: error.message });
+        }
+        return response.status(404).json({ error: error.message });
     }
-
-    const collection = await Collection.findById(id);
-
-    if(!collection) {
-        return response.status(404).json({error: "No such collection!"});
-    }
-
-    response.status(200).json(collection);
 };
 
 const createCollection = async (request, response) => {
-    const { title, description } = request.body;
+    try {
+        const collection = await collectionService.createCollection(request.body);
+        return response.status(200).json(collection);
+    } catch (error) {
+        return response.status(400).json({ error: error.message });
+    }
+};
+
+const deleteCollection = async (request, response) => {
+    const { id } = request.params;
 
     try {
-        const collection = await Collection.create({ title, description, flashcards: [] });
-        response.status(200).json(collection);
+        const collection = await collectionService.deleteCollection(id);
+        return response.status(200).json(collection);
     } catch (error) {
-        response.status(400).json({ error: error.message })
+        return response.status(400).json({ error: error.message });
+    }
+};
+
+const updateCollection = async (request, response) => {
+    const { id } = request.params;
+
+    try {
+        const updatedCollection = await collectionService.updateCollection(id, request.body);
+        return response.status(200).json(updatedCollection);
+    } catch (error) {
+        return response.status(400).json({ error: error.message });
     }
 };
 
 module.exports = {
     getCollections,
     getCollection,
-    createCollection
+    createCollection,
+    deleteCollection,
+    updateCollection
 };
