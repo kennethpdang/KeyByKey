@@ -16,7 +16,7 @@ This application is suppose to help with that and also with apologetics and any 
 So what is the solution to this if we keep forgetting everything we learn in a theology class or in school? The solution is called *spaced repitition*. This terminology was introduced by. The way it works is that you start memorizing something very intensively initially but then space it out over time as you keep practicing it. This is what this software is designed to do.
 
 ## MERN Stack Application (High Level Overview):
-[Mern Stack](./frontend/public/MERN%20Logo.jpg)
+![Mern Stack Image](./frontend/public/MERN%20Logo.jpg)
 
 This is a very common project known as a MERN application. MERN is an acryonym for a *technical stack*. We have that the components that make up a MERN application are:
 1. A Mongo Database
@@ -27,6 +27,7 @@ This is a very common project known as a MERN application. MERN is an acryonym f
 In general, a MERN project has two phases of development, the "backend" and the "frontend". To align with that architecture, this project is sorted into two folders called the `📁 frontend` and the `📁 backend`. All of our front end related work goes in the `📁 frontend` folder. All the backend stuff goes in the `📁 backend` folder. Usually that would mean that the Mongo Database queries written in Node.js, and also the Express.js framework go in the `📁 backend` folder. The React.js work goes in the `📁 frontend` folder. We also use Mongoose to apply a strict schema on each of our database objects.
 
 #### How Does This Application Work?
+
 
 ## Security Stuff:
 What is the `.env` file? The `.env` file is where all the important and sensitive information belong. For example, when we create a MongoDB database, our application would need the database connection string, which has our password in the string. We do not want to expose this on repos like our Github, thus we have to hide it. We thus place that connection string in our `.env` file (which is globally accessible in a Node.js project) and then add the `.env` file to our `.gitignore` file. Anything in the `.gitignore` file does not get pushed to Github. We can also place folders like `📁 node_modules`, which are very large.
