@@ -16,7 +16,12 @@ const collectionSchema = new Schema({
     flashcards: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Flashcard'
-    }]
+    }],
+    spacedRepitition: {
+        type: Number,
+        required: true,
+        enum: [1, 2, 4, 8, 16, 32, 64]
+    }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Collection', collectionSchema);

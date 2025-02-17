@@ -1,25 +1,45 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import React,  {useEffect } from 'react';
+
+// Components
+import Navbar from "./components/Navbar.js";
+
+// Pages
+import Home from "./pages/Home.js"
+import AboutUs from "./pages/AboutUs.js"
 
 function App() {
-  return (
+    useEffect(() => {
+        const images = [
+            '/memorize_link_image.png',
+            '/flashcard_link_image.png',
+            '/aboutus_link_image.png'
+        ];
+
+        images.forEach(src => {
+            const img = new Image();
+            img.src = src;
+        });
+      }, []);
+
+    return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+        <BrowserRouter>
+        <Navbar />
+        <Routes>
+            <Route
+                path = "/"
+                element = {<Home />}
+            />
+            <Route
+                path = "/about-us"
+                element = {<AboutUs />}
+            />
+        </Routes>
+        </BrowserRouter>
     </div>
-  );
+    );
 }
 
 export default App;

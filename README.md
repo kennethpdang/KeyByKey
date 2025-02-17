@@ -18,16 +18,24 @@ So what is the solution to this if we keep forgetting everything we learn in a t
 ## MERN Stack Application (High Level Overview):
 ![Mern Stack Image](./frontend/public/MERN%20Logo.jpg)
 
-This is a very common project known as a MERN application. MERN is an acryonym for a *technical stack*. We have that the components that make up a MERN application are:
-1. A Mongo Database
-2. An Express.js Framework For Middleware
-3. A React.js Frontend
-4. A Node.js Backend
+This is a very common project known as a MERN application. MERN is an acryonym for a *technical stack*. In software development, a technical stack is a collection of technologies (it can be frameworks, libraries, modules). We have that the components that make up a MERN application are:
+1. A Mongo Database - **A database** that stores data in a JSON like format.
+2. An Express.js - **A framework** that handles HTTP requests. 
+3. A React.js Frontend - **A library** for frontend and UI/UX displays.
+4. A Node.js Backend - **A javascript** runtime environment to execute our code on the server - side. 
 
-In general, a MERN project has two phases of development, the "backend" and the "frontend". To align with that architecture, this project is sorted into two folders called the `📁 frontend` and the `📁 backend`. All of our front end related work goes in the `📁 frontend` folder. All the backend stuff goes in the `📁 backend` folder. Usually that would mean that the Mongo Database queries written in Node.js, and also the Express.js framework go in the `📁 backend` folder. The React.js work goes in the `📁 frontend` folder. We also use Mongoose to apply a strict schema on each of our database objects.
+In general, a MERN project has two phases of development, the "backend" and the "frontend". To align with that architecture, this project is sorted into two folders called the `📁 frontend` and the `📁 backend`. All of our front end related work goes in the `📁 frontend` folder. All the backend stuff goes in the `📁 backend` folder. Usually, that would mean that the things like our HTTP handlers written in **Express.js**, all our server - side logic written in **Node.js**, and of course the database itself **MongoDB** would go in the `📁 backend` folder. In the `📁 frontend` folder we would have our **React.js** library.
 
-#### How Does This Application Work?
+#### Framework, Packages, Libraries, Modules?
+What exactly is the difference between a module, a package, a library, and a framework? This is explained in the chart below:
+|------------|------------|------------|
+| Row 1 Col 1| Row 1 Col 2| Row 1 Col 3|
+| Row 2 Col 1| Row 2 Col 2| Row 2 Col 3|
 
+#### Iteraction Between `📁 frontend` and `📁 backend`:
+Our data is retrieved from the `📁 backend`.
+
+####
 
 ## Security Stuff:
 What is the `.env` file? The `.env` file is where all the important and sensitive information belong. For example, when we create a MongoDB database, our application would need the database connection string, which has our password in the string. We do not want to expose this on repos like our Github, thus we have to hide it. We thus place that connection string in our `.env` file (which is globally accessible in a Node.js project) and then add the `.env` file to our `.gitignore` file. Anything in the `.gitignore` file does not get pushed to Github. We can also place folders like `📁 node_modules`, which are very large.
