@@ -8,6 +8,7 @@ import Navbar from "./components/Navbar.js";
 // Pages
 import Home from "./pages/Home.js"
 import AboutUs from "./pages/AboutUs.js"
+import Memorize from "./pages/Memorize.js"
 
 function App() {
     useEffect(() => {
@@ -31,6 +32,10 @@ function App() {
             <Route
                 path = "/"
                 element = {<Home />}
+            />
+            <Route
+                path = "/memorize"
+                element = {<Memorize />}
             />
             <Route
                 path = "/about-us"

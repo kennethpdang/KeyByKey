@@ -22,7 +22,7 @@
 
 /* Update logo width to 4rem and change default color to white */
 .logo {
-    width: 4rem;
+    width: 2.5rem;
     height: auto;
     margin-right: 1rem;
     transition: filter 0.3s ease;

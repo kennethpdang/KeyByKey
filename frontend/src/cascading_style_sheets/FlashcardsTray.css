@@ -1,0 +1,101 @@
+.tray-container {
+    box-sizing: border-box;
+    transition: width 0.3s ease;
+    width: 50px; 
+    position: relative;
+    background-color: transparent;
+    padding: 10px; 
+}
+
+.tray-container.open {
+    width: 250px; 
+    border-right: 1px solid #ccc;
+}
+
+.tray-header {
+    position: relative;
+    height: 32px; 
+}
+
+.toggle-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;   
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.toggle-icon i {
+    transition: transform 0.3s ease-in-out; /* Smooth rotation */
+}
+
+.toggle-icon i.rotate {
+    transform: rotate(-90deg); /* Rotate to the right when open */
+}
+
+.toggle-icon i.closed {
+    transform: rotate(0deg); /* Keep it pointing down when closed */
+}
+
+.tray-title {
+    position: absolute;
+    left: 52px;    
+    top: 0;
+    height: 32px;
+    line-height: 32px;
+    font-weight: bold;
+}
+
+.tray-list {
+    margin-top: 10px;
+    overflow-y: auto;
+}
+
+.flashcard-item {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    padding: 10px;
+}
+
+/* Flashcard Header (Title) */
+.flashcard-header {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+
+/* Flashcard Category (Less Prominent) */
+.flashcard-category {
+    font-size: 0.9rem;
+    color: #bbbbbb;
+    margin-bottom: 5px;
+}
+
+/* Flashcard Description (Limited Characters) */
+.flashcard-description {
+    font-size: 0.95rem;
+    line-height: 1.4;
+    color: #ffffff;
+    margin-bottom: 8px;
+}
+
+/* Flashcard Due Date (Italicized) */
+.flashcard-due-date {
+    font-size: 0.85rem;
+    font-style: italic;
+    color: #aaaaaa;
+    margin-top: 5px;
+}
+
+.delete-button {
+    background: none;
+    border: none;
+    color: red;
+    cursor: pointer;
+}

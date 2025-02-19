@@ -1,0 +1,96 @@
+/* Container for the entire page */
+.memorize-page {
+    display: flex;
+    background-color: #0E1113;
+    min-height: 100vh;
+    color: #fff;
+  }
+  
+  /* Left panel container */
+  .left-panel {
+    /* The flashcards-panel within this container will control its own width */
+    position: relative;
+  }
+  
+  /* Flashcards panel that slides open/closed */
+  .flashcards-panel {
+    background-color: #0E1113;  /* Same as page background */
+    border-right: 1px solid #fff; /* Thin right border */
+    overflow: hidden;
+    position: relative;
+    transition: width 0.3s ease;
+  }
+  
+  /* Expanded panel width */
+  .flashcards-panel.open {
+    width: 300px;
+  }
+  
+  /* Retracted panel width */
+  .flashcards-panel.closed {
+    width: 30px;
+  }
+  
+  /* Toggle arrow positioned inside the panel */
+  .panel-toggle {
+    position: absolute;
+    top: 1rem;
+    right: -15px;  /* Slightly outside so it's visible */
+    background-color: #0E1113;
+    border: 1px solid #fff;
+    border-radius: 50%;
+    padding: 5px;
+    cursor: pointer;
+  }
+  
+  /* Content inside the panel (flashcards) */
+  .flashcards-content {
+    padding: 1rem;
+    overflow-y: auto;
+    max-height: calc(100vh - 60px);
+  }
+  
+  /* Each flashcard item with a separator */
+  .flashcard-item {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #fff;
+  }
+  
+  /* Remove bottom border for the last flashcard if desired */
+  .flashcard-item:last-child {
+    border-bottom: none;
+  }
+  
+  /* Flashcard header styling */
+  .flashcard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+  
+  .flashcard-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+  
+  /* Delete button styling */
+  .delete-button {
+    background: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+  }
+  
+  /* Flashcard description styling */
+  .flashcard-description {
+    font-size: 0.9rem;
+    line-height: 1.3;
+  }
+  
+  /* Main content area for the Memorize page */
+  .memorize-content {
+    flex: 1;
+    padding: 2rem;
+  }
+  
