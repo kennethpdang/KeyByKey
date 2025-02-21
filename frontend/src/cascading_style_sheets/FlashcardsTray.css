@@ -60,14 +60,20 @@
     flex-direction: column;
     padding: 10px;
     border-bottom: 1px solid #ccc;
-    padding: 10px;
+}
+
+/* Flexbox container for title and delete button */
+.flashcard-header-container {
+    display: flex;
+    justify-content: space-between; /* Push title left, delete button right */
+    align-items: center;
+    width: 100%;
 }
 
 /* Flashcard Header (Title) */
 .flashcard-header {
     font-size: 1.2rem;
     font-weight: bold;
-    margin-bottom: 3px;
 }
 
 /* Flashcard Category (Less Prominent) */
@@ -92,6 +98,7 @@
     color: #aaaaaa;
     margin-top: 5px;
 }
+
 
 .delete-button {
     background: none;

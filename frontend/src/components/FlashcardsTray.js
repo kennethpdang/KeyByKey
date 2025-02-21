@@ -15,7 +15,15 @@ function FlashcardsTray({ isOpen, togglePanel, flashcards, handleDelete }) {
         <div className="tray-list">
           {flashcards.map((card) => (
             <div className="flashcard-item" key={card.id}>
-              <div className="flashcard-header">{card.title}</div>
+              
+              {/* Flex container for title and delete button */}
+              <div className="flashcard-header-container">
+                <div className="flashcard-header">{card.title}</div>
+                <button className="delete-button" onClick={() => handleDelete(card.id)}>
+                  <i className="fas fa-trash"></i>
+                </button>
+              </div>
+
               <div className="flashcard-category">{card.category}</div>
               <div className="flashcard-description">
                 {card.description.length > 250
@@ -23,12 +31,7 @@ function FlashcardsTray({ isOpen, togglePanel, flashcards, handleDelete }) {
                   : card.description}
               </div>
               <div className="flashcard-due-date">Due: {card.dueDate}</div>
-              <button
-                className="delete-button"
-                onClick={() => handleDelete(card.id)}
-              >
-                <i className="fas fa-trash"></i>
-              </button>
+
             </div>
           ))}
         </div>
