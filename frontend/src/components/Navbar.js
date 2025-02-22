@@ -13,7 +13,10 @@ function Navbar() {
         <nav className="navbar">
             <div className="navbar-content">
                 <div className="navbar-brand">
-                    <img src="/logo.svg" alt="Logo" className="logo" />
+                    {/* Wrap the logo in a Link to navigate to the home page */}
+                    <Link to="/">
+                        <img src="/logo.svg" alt="Logo" className="logo" />
+                    </Link>
                 </div>
                 <button className="navbar-toggle" onClick={handleToggleMenu}>
                     <i className="fas fa-bars"></i>
@@ -31,7 +34,7 @@ function Navbar() {
                             <div className="navbar-image-text">Memorize</div>
                         </div>
                     </Link>
-                    <Link to="/flashcards" className="navbar-link">
+                    <Link to="/flashcard-categories" className="navbar-link">
                         <div className="navbar-image-container">
                             <img
                                 src="/flashcard_link_image.png"

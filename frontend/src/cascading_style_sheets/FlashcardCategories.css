@@ -1,0 +1,175 @@
+    /* Outer container centers the combined content */
+    .flashcard-categories-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 2rem;
+    margin: 0 auto;
+    font-family: sans-serif;
+    color: #fff;
+    gap: 0; /* spacing will be managed on children */
+    }
+
+    /* The list container with larger width */
+    .flashcard-categories {
+    width: 900px;
+    max-width: 100%;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    }
+
+    /* When form is visible, slide the list to the right */
+    .flashcard-categories.shifted {
+    opacity: 0.7;
+    }
+
+    /* Header for the categories list */
+    .categories-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    }
+
+    .categories-header h2 {
+    font-size: 2rem;
+    margin: 0;
+    }
+
+    .add-category-button {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.2rem;
+    cursor: pointer;
+    }
+
+    /* List styling */
+    .flashcard-categories ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    }
+
+    .flashcard-categories li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .category-item {
+    display: flex;
+    align-items: center;
+    }
+
+    .category-icon {
+    margin-right: 1rem;
+    font-size: 1.2rem;
+    }
+
+    .category-name {
+    flex: 1;
+    font-size: 1rem;
+    }
+
+    .category-arrow {
+    font-size: 1rem;
+    }
+
+    /* Form container – no slide effect, only fade in */
+    .flashcard-category-form {
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    padding: 1.5rem;
+    width: 300px;
+    margin-left: 75px; /* 75px gap between the two elements */
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    animation: fadeIn 0.5s forwards;
+    }
+
+    /* Fade in keyframes for the form */
+    @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+    }
+
+    /* Form header */
+    .form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    }
+
+    .form-header h2 {
+    font-size: 1.5rem;
+    margin: 0;
+    }
+
+    .close-form-button {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transform: rotate(45deg); /* plus icon rotated to look like an X */
+    }
+
+    /* Form groups */
+    .form-group {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    }
+
+    .form-group label {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+    padding: 0.5rem;
+    border: 1px solid #555;
+    border-radius: 4px;
+    background-color: #2e2e2e;
+    color: #fff;
+    }
+
+    .form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+    }
+
+    /* Character count */
+    .char-count {
+    margin-top: 0.25rem;
+    font-size: 0.8rem;
+    text-align: right;
+    color: #aaa;
+    }
+
+    .char-count.warning {
+    color: red;
+    }
+
+    /* Submit button */
+    .submit-button {
+    background-color: #4caf50;
+    border: none;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    }
+
+    /* Responsive adjustments for smaller viewports */
+    @media (max-width: 1000px) {
+    .flashcard-categories {
+        width: 100%;
+    }
+    .flashcard-category-form {
+        width: 100%;
+        margin-left: 20px;
+    }
+    }

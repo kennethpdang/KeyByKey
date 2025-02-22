@@ -25,11 +25,11 @@ const Home = () => {
         </Link>
 
         <Link 
-          to="/flashcards" 
+          to="/flashcard-categories" 
           className="home-box" 
           style={{ backgroundImage: "url(/flashcard_link_image.png)" }}
         >
-          <span className="box-label">Flashcards</span>
+          <span className="box-label">Flashcard Categories</span>
         </Link>
 
         <Link 
