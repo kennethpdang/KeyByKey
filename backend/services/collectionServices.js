@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const Collection = require('../models/collectionModel');
+const Flashcard = require('../models/flashcardModel.js');
+const Collection = require('../models/collectionModel.js');
 
 async function getAllCollections() {
     return await Collection.find({}).sort({ createdAt: -1 });
@@ -47,6 +48,8 @@ async function deleteCollection(id) {
     if (!collection) {
         throw new Error('No such collection!');
     }
+    // Cascade delete: remove all flashcards associated with this collection
+    await Flashcard.deleteMany({ collectionName: id });
     return collection;
 }
 

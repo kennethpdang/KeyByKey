@@ -3,6 +3,7 @@ require('dotenv').config({path: '../.env'}); // This is for our global environme
 const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
+const cors = require('cors');
 
 // Create express app:
 const app = express();
@@ -14,6 +15,7 @@ const flashcardRoutes = require('./routes/flashcards.js');
 // Logging Stuff
 app.use(express.json());
 app.use(morgan(':method :url :status')); // Log our requests in the terminal.
+app.use(cors());
 
 // Routes
 app.use('/api/collections', collectionRoutes);

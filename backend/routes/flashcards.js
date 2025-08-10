@@ -4,7 +4,8 @@ const {
     getFlashcard,
     createFlashcard,
     deleteFlashcard,
-    updateFlashcard
+    updateFlashcard,
+    reviewFlashcard
 } = require('../controllers/flashcardController.js')
 
 const router = express.Router();
@@ -14,5 +15,6 @@ router.get('/:id', getFlashcard);
 router.post('/', createFlashcard);
 router.delete('/:id', deleteFlashcard);
 router.patch('/:id', updateFlashcard);
+router.patch('/:id/review', reviewFlashcard);
 
 module.exports = router;

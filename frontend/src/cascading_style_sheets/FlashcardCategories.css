@@ -1,5 +1,5 @@
-    /* Outer container centers the combined content */
-    .flashcard-categories-container {
+/* Outer container centers the combined content */
+.flashcard-categories-container {
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -7,153 +7,196 @@
     margin: 0 auto;
     font-family: sans-serif;
     color: #fff;
-    gap: 0; /* spacing will be managed on children */
-    }
+    gap: 0;
+}
 
-    /* The list container with larger width */
-    .flashcard-categories {
+/* The list container with larger width */
+.flashcard-categories {
     width: 900px;
     max-width: 100%;
     transition: transform 0.5s ease, opacity 0.5s ease;
-    }
+}
 
-    /* When form is visible, slide the list to the right */
-    .flashcard-categories.shifted {
+/* When form is visible, slide the list to the right */
+.flashcard-categories.shifted {
     opacity: 0.7;
-    }
+}
 
-    /* Header for the categories list */
-    .categories-header {
+/* Header for the categories list */
+.categories-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
-    }
+}
 
-    .categories-header h2 {
+.categories-header h2 {
     font-size: 2rem;
     margin: 0;
-    }
+}
 
-    .add-category-button {
+.add-category-button {
     background: none;
     border: none;
     color: #fff;
     font-size: 1.2rem;
     cursor: pointer;
-    }
+}
 
-    /* List styling */
-    .flashcard-categories ul {
+/* List styling */
+.flashcard-categories ul {
     list-style: none;
     padding: 0;
     margin: 0;
-    }
+}
 
-    .flashcard-categories li {
+.flashcard-categories li {
     padding: 0.75rem 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
+}
 
-    .category-item {
+/* Category item container: flex layout to separate info and actions */
+.category-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Grouping icon and text */
+.category-info {
     display: flex;
     align-items: center;
-    }
+    gap: 1rem;
+}
 
-    .category-icon {
-    margin-right: 1rem;
+/* Category icon */
+.category-icon {
     font-size: 1.2rem;
-    }
+}
 
-    .category-name {
-    flex: 1;
+/* Category text and description */
+.category-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.category-name {
     font-size: 1rem;
-    }
+}
 
-    .category-arrow {
+.category-description {
+    font-size: 0.85rem;
+    color: #ccc;
+    margin-top: 0.25rem;
+}
+
+/* Styles for category actions (delete and update icons) */
+.category-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.category-actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.update-category-button i {
+    color: #fff;
     font-size: 1rem;
-    }
+}
 
-    /* Form container – no slide effect, only fade in */
-    .flashcard-category-form {
+.delete-category-button i {
+    color: red;
+    font-size: 1rem;
+}
+
+/* Form container – slide-in effect with fade */
+.flashcard-category-form {
     background-color: #1e1e1e;
     border-radius: 8px;
     padding: 1.5rem;
     width: 300px;
-    margin-left: 75px; /* 75px gap between the two elements */
+    margin-left: 75px;
     opacity: 0;
     transition: opacity 0.5s ease;
     animation: fadeIn 0.5s forwards;
-    }
+}
 
-    /* Fade in keyframes for the form */
-    @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+/* Fade in keyframes for the form */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
     }
+    to {
+        opacity: 1;
+    }
+}
 
-    /* Form header */
-    .form-header {
+/* Form header */
+.form-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
-    }
+}
 
-    .form-header h2 {
+.form-header h2 {
     font-size: 1.5rem;
     margin: 0;
-    }
+}
 
-    .close-form-button {
+.close-form-button {
     background: none;
     border: none;
     color: #fff;
     font-size: 1.2rem;
     cursor: pointer;
-    transform: rotate(45deg); /* plus icon rotated to look like an X */
-    }
+    transform: rotate(45deg);
+}
 
-    /* Form groups */
-    .form-group {
+/* Form groups */
+.form-group {
     margin-bottom: 1rem;
     display: flex;
     flex-direction: column;
-    }
+}
 
-    .form-group label {
+.form-group label {
     margin-bottom: 0.5rem;
     font-size: 0.9rem;
-    }
+}
 
-    .form-group input,
-    .form-group textarea {
+.form-group input,
+.form-group textarea {
     padding: 0.5rem;
     border: 1px solid #555;
     border-radius: 4px;
     background-color: #2e2e2e;
     color: #fff;
-    }
+}
 
-    .form-group textarea {
+.form-group textarea {
     resize: vertical;
     min-height: 100px;
-    }
+}
 
-    /* Character count */
-    .char-count {
+/* Character count */
+.char-count {
     margin-top: 0.25rem;
     font-size: 0.8rem;
     text-align: right;
     color: #aaa;
-    }
+}
 
-    .char-count.warning {
+.char-count.warning {
     color: red;
-    }
+}
 
-    /* Submit button */
-    .submit-button {
+/* Submit button */
+.submit-button {
     background-color: #4caf50;
     border: none;
     color: #fff;
@@ -161,15 +204,91 @@
     border-radius: 4px;
     cursor: pointer;
     font-size: 1rem;
-    }
+}
 
-    /* Responsive adjustments for smaller viewports */
-    @media (max-width: 1000px) {
+/* Responsive adjustments for smaller viewports */
+@media (max-width: 1000px) {
     .flashcard-categories {
         width: 100%;
     }
+
     .flashcard-category-form {
         width: 100%;
         margin-left: 20px;
     }
-    }
+}
+
+/* ---------------------- Modal Styles ---------------------- */
+
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+/* Modal Content */
+.modal-content {
+    background: #1e1e1e;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+}
+
+/* Modal Header */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: #fff;
+}
+
+/* Exit Button for Modal */
+.exit-button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #fff;
+    cursor: pointer;
+}
+
+/* Modal Footer */
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+.cancel-button,
+.confirm-button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.cancel-button {
+    background-color: #aaa;
+    margin-right: 20px;
+}
+
+.confirm-button {
+    background-color: red;
+}

@@ -1,4 +1,4 @@
-const collectionService = require('../services/collectionService');
+const collectionService = require('../services/collectionServices.js');
 
 const getCollections = async (request, response) => {
     try {

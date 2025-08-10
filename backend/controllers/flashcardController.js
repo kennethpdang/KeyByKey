@@ -51,10 +51,22 @@ const updateFlashcard = async (request, response) => {
     }
 };
 
+const reviewFlashcard = async (request, response) => {
+    const { id } = request.params;
+
+    try {
+        const card = await flashcardService.reviewFlashcard(id, request.body);
+        return response.status(200).json(card);
+    } catch (error) {
+        return reponse.status(400).json({ error: error.message });
+    }
+};
+
 module.exports = {
     getFlashcards,
     getFlashcard,
     createFlashcard,
     deleteFlashcard,
-    updateFlashcard
+    updateFlashcard,
+    reviewFlashcard
 };

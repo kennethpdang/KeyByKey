@@ -2,8 +2,18 @@ const mongoose = require('mongoose');
 const Flashcard = require('../models/flashcardModel.js');
 const Collection = require('../models/collectionModel.js');
 
+
+function isSameUtcDay(a, b) {
+    if (!a || !b) return false;
+    return (
+        a.getUTCFullYear() === b.getUTCFullYear() &&
+        a.getUTCMonth() === b.getUTCMonth() &&
+        a.getUTCDate() === b.getUTCDate()
+    );
+}
+
 async function getAllFlashcards() {
-    return await Flashcard.find({}).sort({ createdAt: -1 });
+    return await Flashcard.find({}).populate('collectionName').sort({ createdAt: -1 });
 }
 
 /**
@@ -68,26 +78,83 @@ async function deleteFlashcard(id) {
 */
 async function updateFlashcard(id, data) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        throw new Error('Invalid flashcard ID');
+    throw new Error('Invalid flashcard ID');
     }
 
-    const flashcard = await Flashcard.findOneAndUpdate(
+    // Retrieve the current flashcard
+    const existingFlashcard = await Flashcard.findById(id);
+    if (!existingFlashcard) {
+    throw new Error('Flashcard not found');
+    }
+
+    // Check if the collectionName is being updated
+    if (data.collectionName && data.collectionName.toString() !== existingFlashcard.collectionName.toString()) {
+    // Remove the flashcard ID from the old collection
+    await Collection.updateOne(
+        { _id: existingFlashcard.collectionName },
+        { $pull: { flashcards: id } }
+    );
+    // Add the flashcard ID to the new collection
+    await Collection.updateOne(
+        { _id: data.collectionName },
+        { $push: { flashcards: id } }
+    );
+    }
+
+    // Update the flashcard document
+    const updatedFlashcard = await Flashcard.findOneAndUpdate(
         { _id: id },
         { ...data },
         { new: true }
     );
 
-    if (!flashcard) {
-        throw new Error('Flashcard not found');
+    if (!updatedFlashcard) {
+    throw new Error('Flashcard not found');
     }
 
-    return flashcard;
+    return updatedFlashcard;
 }
 
+async function reviewFlashcard(id, { mode, accuracy }) {
+    if (!mongoose.Types.ObjectId.isValid(id)) throw new Error('Invalid flashcard ID');
+    const card = await Flashcard.findById(id);
+    if (!card) throw new Error('Flashcard not found');
+
+    const now = new Date();
+
+    // Only BRAIN mastery bumps interval; early reviews still count.
+    if (mode === 'BRAIN' && typeof accuracy === 'number' && accuracy >= 90) {
+        const alreadyMasteredToday = isSameUtcDay(now, card.lastMasteredAt);
+
+        if (!alreadyMasteredToday) {
+            const ladder = [1, 2, 4, 8, 16, 32, 64, 128, 256, 365];
+            const currentIdx = Math.max(0, ladder.indexOf(card.spacedRepitition));
+            const nextIdx = Math.min(currentIdx + 1, ladder.length - 1);
+            const nextIntervalDays = ladder[nextIdx];
+
+            const nextDue = new Date(now);
+            nextDue.setDate(nextDue.getDate() + nextIntervalDays);
+
+            card.spacedRepitition = nextIntervalDays;
+            card.masteredCount = (card.masteredCount || 0) + 1;
+            card.nextDueAt = nextDue;
+            card.lastReviewedAt = now;
+            card.lastMasteredAt = now;
+        } else {
+            card.lastReviewedAt = now;
+        }
+    } else {
+        card.lastReviewedAt = now;
+    }
+    await card.save();
+    return card;
+}
+  
 module.exports = {
     getAllFlashcards,
     getFlashcardById,
     createFlashcard,
     deleteFlashcard,
-    updateFlashcard
+    updateFlashcard,
+    reviewFlashcard
 };
