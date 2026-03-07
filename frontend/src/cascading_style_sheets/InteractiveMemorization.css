@@ -14,10 +14,39 @@
     box-shadow: none;
 }
 
+/* Viewport window that clips content */
+.text-viewport {
+    width: 85%;
+    overflow: hidden; /* Hide anything outside viewport */
+    position: relative;
+    display: flex;
+    justify-content: center; /* Always center horizontally */
+}
+
+/* Short content - center vertically */
+.text-viewport.short-content {
+    align-items: center;
+}
+
+/* Long content - start from top */
+.text-viewport.long-content {
+    align-items: flex-start;
+}
+
+/* Container that moves via transform */
+.text-content-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    transition: transform 0.2s ease-out; /* Reduced from 0.3s for snappier response */
+    width: 100%;
+}
+
 .screen.guided .feedback-container {
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  word-break: break-word;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .speedometer {
@@ -35,6 +64,7 @@
     font-size: 1.5rem;
     background: rgba(0, 0, 0, 0.5);
     text-shadow: 0 0 5px white;
+    z-index: 10;
 }
 
 .speedometer-value {
@@ -54,28 +84,31 @@
     display: inline-block;
     word-wrap: break-word;
     max-width: 90%;
-    white-space: pre-wrap; /* preserve newlines and spaces when needed */
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
-.character {
+/* Text flashcard specific character styling */
+.screen:not(.table-screen) .character {
     font-size: 4rem;
     font-weight: bold;
     margin: 0 0.2rem;
     color: white;
-    text-shadow: none; /* changed */
+    text-shadow: none;
 }
 
-.correct {
+.screen:not(.table-screen) .character.correct {
     color: white;
-    text-shadow: 0 0 10px white, 0 0 20px white; /* glow moved here */
+    text-shadow: 0 0 10px white, 0 0 20px white;
 }
 
-.character.hidden {
+.screen:not(.table-screen) .character.hidden {
     color: transparent;
     text-shadow: none;
 }
 
-.incorrect {
+.screen:not(.table-screen) .character.incorrect {
     color: red;
     text-shadow: 0 0 10px red, 0 0 20px red;
 }

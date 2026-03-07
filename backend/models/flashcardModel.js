@@ -1,6 +1,38 @@
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
+
+const CellSchema = new Schema({
+    text: {
+        type: String,
+        default: "",
+        required: true
+    },
+    prefilled: {
+        type: Boolean,
+        default: false
+    }
+}, {_id: false});
+
+const TableSchema = new Schema({
+    rows: {
+        type: Number,
+        min: 1,
+        max: 7,
+        required: true
+    },
+    cols: {
+        type: Number,
+        min: 1,
+        max: 7,
+        required: true
+    },
+    cells: {
+        type: [[CellSchema]],
+        required: true
+    }
+}, { _id: false });
+
 const flashcardSchema = new Schema({
     header: {
         type: String,
@@ -8,7 +40,10 @@ const flashcardSchema = new Schema({
     },
     content: {
         type: String,
-        required: true
+        default: '',
+        required: function () {
+            return this.type !== 'table';
+        }
     },
     collectionName: {
         type: mongoose.Schema.Types.ObjectId,
@@ -37,6 +72,13 @@ const flashcardSchema = new Schema({
         type: Date,
         default: null
     },
+    // String flashcard or table flashcard:
+    type: {
+        type: String,
+        enum: ['text', 'table'],
+        default: 'text'
+    },
+    table: { type: TableSchema, default: null }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Flashcard', flashcardSchema);

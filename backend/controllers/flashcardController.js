@@ -23,6 +23,7 @@ const getFlashcard = async (request, response) => {
 const createFlashcard = async (request, response) => {
     try {
         const flashcard = await flashcardService.createFlashcard(request.body);
+        console.log(request.body)
         return response.status(201).json(flashcard);
     } catch (error) {
         return response.status(400).json({ error: error.message });
@@ -58,7 +59,7 @@ const reviewFlashcard = async (request, response) => {
         const card = await flashcardService.reviewFlashcard(id, request.body);
         return response.status(200).json(card);
     } catch (error) {
-        return reponse.status(400).json({ error: error.message });
+        return response.status(400).json({ error: error.message });
     }
 };
 

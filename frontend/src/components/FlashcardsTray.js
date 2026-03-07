@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import '../cascading_style_sheets/FlashcardsTray.css';
 import { useNavigate } from 'react-router-dom';
+import TableCardFields from './TableCardFields';
 
 function daysUntil(dateStr) {
     if (!dateStr) {
@@ -31,6 +32,21 @@ function getDueStyle(card) {
     return {};                                 // default color
 }
 
+function getCardDescription(card) {
+    if (card.type === 'table') {
+        // For table cards, show dimensions and preview
+        const table = card.table;
+        if (table && table.rows && table.cols) {
+            return `Table (${table.rows}×${table.cols})`;
+        }
+        return 'Table card';
+    } else {
+        // For text cards, show content preview
+        const content = card.content || '';
+        return content.length > 250 ? `${content.substring(0, 250)}...` : content;
+    }
+}
+
 function FlashcardsTray({ isOpen, togglePanel, flashcards, handleDelete, onFlashcardAdded, onFlashcardEdited }) {
     const [showAddModal, setShowAddModal] = useState(false);
     const [newHeader, setNewHeader] = useState("");
@@ -53,6 +69,14 @@ function FlashcardsTray({ isOpen, togglePanel, flashcards, handleDelete, onFlash
     // Keyboard nav (roving tabindex)
     const [focusedIndex, setFocusedIndex] = useState(0);
     const itemRefs = useRef([]);
+
+    // Set type and tables:
+    const [newType, setNewType] = useState("text");
+    const [newTable, setNewTable] = useState(null);
+
+    // Table edit modal:
+    const [editType, setEditType] = useState("text");
+    const [editTable, setEditTable] = useState(null);
 
     useEffect(() => {
         itemRefs.current = itemRefs.current.slice(0, flashcards.length);
@@ -130,36 +154,83 @@ function FlashcardsTray({ isOpen, togglePanel, flashcards, handleDelete, onFlash
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        const newFlashcard = {
-            header: newHeader,
-            content: newContent,
-            collectionName: newCategory
-        };
+    e.preventDefault();
+    setError(null);
 
-        try {
-        const response = await fetch('/api/flashcards/', {
-            method: 'POST',
-            body: JSON.stringify(newFlashcard),
-            headers: { 'Content-Type': 'application/json' },
+    // Build request body based on card type
+    let body;
+    if (newType === "table") {
+        // Basic client-side validation for table cards
+        if (
+        !newTable ||
+        !Number.isInteger(newTable.rows) ||
+        !Number.isInteger(newTable.cols) ||
+        !Array.isArray(newTable.cells)
+        ) {
+        setError("Please configure a valid table (pick size and fill cells).");
+        return;
+        }
+
+        body = {
+        header: (newHeader || "").trim(),
+        type: "table",
+        content: "",          // not used for table cards
+        table: newTable,
+        collectionName: newCategory, // expect _id string
+        };
+    } else {
+        // Text card
+        if (!newContent || !newContent.trim()) {
+        setError("Content is required for text cards.");
+        return;
+        }
+        body = {
+        header: (newHeader || "").trim(),
+        type: "text",
+        content: newContent,
+        table: null,
+        collectionName: newCategory,
+        };
+    }
+
+    // Common validations
+    if (!body.header) {
+        setError("Title is required.");
+        return;
+    }
+    if (!body.collectionName) {
+        setError("Please choose a collection.");
+        return;
+    }
+
+    try {
+        const response = await fetch("/api/flashcards/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
         });
+
         const json = await response.json();
 
         if (!response.ok) {
-            setError(json.error);
-        } else {
-            setNewHeader("");
-            setNewContent("");
-            setNewCategory("");
-            closeModal();
-            onFlashcardAdded(json);
+        setError(json?.error || "Failed to create flashcard.");
+        return;
         }
-        } catch (err) {
-        setError("An unexpected error occurred.");
-        console.error(err);
-        }
-    };
 
+        // Success: reset form, close, refresh list via parent callback
+        setNewHeader("");
+        setNewContent("");
+        setNewCategory("");
+        setNewType("text");
+        setNewTable(null);
+
+        closeModal();
+        onFlashcardAdded && onFlashcardAdded(json);
+    } catch (err) {
+        console.error(err);
+        setError("Network error creating flashcard.");
+    }
+    };
     // Delete confirmation modal functions.
     const showDeleteConfirmation = (id) => {
         setCardToDelete(id);
@@ -181,8 +252,13 @@ function FlashcardsTray({ isOpen, togglePanel, flashcards, handleDelete, onFlash
     const openEditModal = (flashcard) => {
         setFlashcardToEdit(flashcard);
         setEditHeader(flashcard.header);
-        setEditContent(flashcard.content);
+        setEditContent(flashcard.content || "");
         setEditCategory(flashcard.collectionName ? flashcard.collectionName._id : "");
+
+        // NEW: preload type/table
+        setEditType(flashcard.type || "text");
+        setEditTable(flashcard.table || null);
+
         setEditModalVisible(true);
     };
 
@@ -190,41 +266,54 @@ function FlashcardsTray({ isOpen, togglePanel, flashcards, handleDelete, onFlash
         setEditModalVisible(false);
         setFlashcardToEdit(null);
         setError(null);
+        // NEW: reset edit fields
+        setEditType("text");
+        setEditTable(null);
     };
 
     const handleEditSubmit = async (e) => {
         e.preventDefault();
         if (!flashcardToEdit) return;
-        const updatedFlashcard = {
+
+        const body = editType === 'table' ? {
             header: editHeader,
-            content: editContent,
+            type: 'table',
+            content: '',          // table cards don’t use content
+            table: editTable,
             collectionName: editCategory
-        };
+            }
+        : {
+            header: editHeader,
+            type: 'text',
+            content: editContent,
+            table: null,
+            collectionName: editCategory
+            };
 
         try {
             const response = await fetch(`/api/flashcards/${flashcardToEdit._id}`, {
-                method: 'PATCH',
-                body: JSON.stringify(updatedFlashcard),
-                headers: { 'Content-Type': 'application/json' },
+            method: 'PATCH',
+            body: JSON.stringify(body),
+            headers: { 'Content-Type': 'application/json' },
             });
             const json = await response.json();
 
             if (!response.ok) {
-                setError(json.error);
+            setError(json.error);
             } else {
-                closeEditModal();
-                onFlashcardEdited(json);
+            closeEditModal();
+            onFlashcardEdited(json);
             }
         } catch (err) {
-        setError("An unexpected error occurred.");
-        console.error(err);
+            setError("An unexpected error occurred.");
+            console.error(err);
         }
     };
 
-    // Navigate to the memorize page with flashcard id when a flashcard is clicked.
-    const handleFlashcardClick = (cardId) => {
-        navigate(`/memorize/${cardId}`);
-    };
+        // Navigate to the memorize page with flashcard id when a flashcard is clicked.
+        const handleFlashcardClick = (cardId) => {
+            navigate(`/memorize/${cardId}`);
+        };
 
     return (
         <>
@@ -279,7 +368,7 @@ function FlashcardsTray({ isOpen, togglePanel, flashcards, handleDelete, onFlash
                             {card.collectionName && card.collectionName.title}
                         </div>
                         <div className="flashcard-description">
-                            {card.content.length > 250 ? `${card.content.substring(0, 250)}...` : card.content}
+                            {getCardDescription(card)}
                         </div>
                         <div className="flashcard-due-date" style={getDueStyle(card)}>
                             {renderDue(card)}
@@ -312,16 +401,11 @@ function FlashcardsTray({ isOpen, togglePanel, flashcards, handleDelete, onFlash
                     required
                     />
                 </div>
-                <div className="form-group">
-                    <label htmlFor="flashcardContent">Content/Response</label>
-                    <textarea
-                    id="flashcardContent"
-                    value={newContent}
-                    onChange={(e) => setNewContent(e.target.value)}
-                    placeholder="Enter flashcard content/response"
-                    required
-                    />
-                </div>
+                <TableCardFields
+                    type={newType} setType={setNewType}
+                    content={newContent} setContent={setNewContent}
+                    table={newTable} setTable={setNewTable}
+                />
                 <div className="form-group">
                     <label htmlFor="flashcardCategory">Category</label>
                     <select
@@ -372,15 +456,11 @@ function FlashcardsTray({ isOpen, togglePanel, flashcards, handleDelete, onFlash
                     required
                     />
                 </div>
-                <div className="form-group">
-                    <label htmlFor="editFlashcardContent">Content/Response</label>
-                    <textarea
-                    id="editFlashcardContent"
-                    value={editContent}
-                    onChange={(e) => setEditContent(e.target.value)}
-                    required
-                    />
-                </div>
+                <TableCardFields
+                    type={editType} setType={setEditType}
+                    content={editContent} setContent={setEditContent}
+                    table={editTable} setTable={setEditTable}
+                />
                 <div className="form-group">
                     <label htmlFor="editFlashcardCategory">Category</label>
                     <select

@@ -2,6 +2,21 @@ const mongoose = require('mongoose');
 const Flashcard = require('../models/flashcardModel.js');
 const Collection = require('../models/collectionModel.js');
 
+function validateTablePayload(table) {
+    if (!table) throw new Error("Missing table payload");
+    const { rows, cols, cells } = table;
+    if (!(Number.isInteger(rows) && Number.isInteger(cols))) throw new Error("rows/cols must be integers");
+    if (rows < 1 || rows > 7 || cols < 1 || cols > 7) throw new Error("rows/cols must be between 1 and 7");
+    if (!Array.isArray(cells) || cells.length !== rows) throw new Error("cells must be a 2D array sized rows×cols");
+    for (let r = 0; r < rows; r++) {
+        if (!Array.isArray(cells[r]) || cells[r].length !== cols) throw new Error("cells row width mismatch");
+        for (let c = 0; c < cols; c++) {
+            const cell = cells[r][c];
+            if (typeof cell.text !== 'string') throw new Error("cell.text must be a string");
+            if (typeof cell.prefilled !== 'boolean') throw new Error("cell.prefilled must be a boolean");
+    }
+  }
+}
 
 function isSameUtcDay(a, b) {
     if (!a || !b) return false;
@@ -38,17 +53,44 @@ async function getFlashcardById(id) {
 * @param {ObjectId} data.collectionName
 */
 async function createFlashcard(data) {
-    const { header, content, collectionName } = data;
-    const flashcard = await Flashcard.create({ header, content, collectionName });
+    const {
+        header,
+        content = '',
+        collectionName,
+        type = 'text',
+        table = null
+    } = data;
 
+    if (!header || !header.trim()) throw new Error('Header is required');
+    if (!collectionName) throw new Error('collectionName is required');
+
+    // verify collection exists before creating the card
     const collection = await Collection.findById(collectionName);
-    if (!collection) {
-        throw new Error('Collection not found');
+    if (!collection) throw new Error('Collection not found');
+
+    const doc = {
+        header: header.trim(),
+        collectionName,
+        type
+    };
+
+    if (type === 'table') {
+        validateTablePayload(table);
+        doc.content = '';      // not used for table cards
+        doc.table = table;
+    } else {
+        if (!content || !content.trim()) throw new Error('Content is required for text cards');
+        doc.content = content;
+        doc.table = null;
     }
+
+    const flashcard = await Flashcard.create(doc);
 
     collection.flashcards.push(flashcard._id);
     await collection.save();
-    return flashcard;
+
+    // return populated version for convenience
+    return await Flashcard.findById(flashcard._id).populate('collectionName');
 }
 
 /**

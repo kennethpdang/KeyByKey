@@ -1,0 +1,231 @@
+/* Brain mode layering for maintaining cell size */
+.brain-mode {
+position: relative;
+}
+
+.brain-placeholder-layer {
+/* This layer maintains the cell size */
+}
+
+.brain-typed-layer {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+}
+
+/* Centered text adjustments for brain mode */
+.guided-cell.centered-text .brain-typed-layer {
+text-align: center;
+}.guided-cell.shake {
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0% { transform: translate(0, 0); }
+    25% { transform: translate(-5px, 0); }
+    50% { transform: translate(5px, 0); }
+    75% { transform: translate(-5px, 0); }
+    100% { transform: translate(0, 0); }
+}.table-screen {
+width: 100%;
+height: 100%;
+position: relative;
+display: flex; 
+align-items: center; 
+justify-content: center;
+cursor: default; 
+color: #fff;
+}
+
+.table-wrapper { 
+max-width: 90%; 
+overflow-x: auto; 
+border-radius: 12px;
+overflow: hidden;
+}
+
+.memo-table { 
+border-collapse: collapse; 
+background: #1a1d21;
+width: 100%;
+border-radius: 12px;
+overflow: hidden;
+}
+
+.memo-table td { 
+vertical-align: top;
+border: none;
+padding: 0;
+}
+
+/* Alternating row colors for non-prefilled rows */
+.memo-table tr:nth-child(even) td {
+background-color: #242832;
+}
+
+.memo-table tr:nth-child(odd) td {
+background-color: #1a1d21;
+}
+
+/* Override for prefilled cells */
+.memo-table td .cell.prefilled {
+background-color: #2d3748 !important;
+min-height: 60px;
+padding: 8px 10px;
+box-sizing: border-box;
+overflow: hidden;
+display: flex;
+align-items: flex-start;
+}
+
+/* Prefilled text styling - matching character styles */
+.cell.prefilled .prefilled-text { 
+white-space: pre-wrap; 
+word-break: break-word;
+color: #fff;
+font-size: 1.2rem;
+line-height: 1.4;
+font-weight: bold; /* Added bold to match character styles */
+margin: 0 0.05rem; /* Added margin to match */
+width: 100%;
+overflow: hidden;
+}
+
+/* Prefilled row styling */
+.memo-table tr.prefilled-row td {
+background-color: #2d3748 !important;
+}
+
+/* Prefilled column styling */
+.memo-table td.prefilled-col {
+background-color: #2d3748 !important;
+}
+
+/* Guided cell styling - removed active state box-shadow */
+.guided-cell {
+position: relative;
+min-height: 60px;
+padding: 8px 10px;
+cursor: pointer;
+transition: background-color 0.2s ease;
+box-sizing: border-box;
+overflow: hidden;
+display: flex;
+align-items: flex-start;
+outline: none;
+}
+
+/* Centered text for cells with < 14 characters when any cell > 42 chars */
+.guided-cell.centered-text,
+.cell.prefilled.centered-text {
+text-align: center;
+justify-content: center;
+}
+
+.guided-cell.centered-text .cell-content,
+.cell.prefilled.centered-text .prefilled-text {
+text-align: center;
+}
+
+/* Remove all background changes for focus and completed states */
+.guided-cell:focus {
+/* No background change on focus */
+}
+
+.guided-cell.completed {
+/* No background change when completed */
+}
+
+.cell-content {
+width: 100%;
+position: relative;
+}
+
+.guided-content,
+.brain-mode {
+white-space: pre-wrap;
+word-break: break-word;
+line-height: 1.4;
+font-size: 1.2rem;
+}
+
+/* Table-specific character styling */
+.table-screen .character {
+font-size: 1.2rem;
+font-weight: bold; /* Added bold */
+margin: 0 0.05rem; /* Changed from 0 to 0.05rem */
+color: #fff;
+opacity: 0.4; /* Baseline text is dimmed */
+}
+
+.table-screen .character.correct {
+color: #fff;
+opacity: 1;
+text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+}
+
+.table-screen .character.incorrect {
+color: #ff4444;
+opacity: 1;
+text-shadow: 0 0 3px rgba(255, 68, 68, 0.5);
+}
+
+.table-screen .character.hidden {
+color: transparent;
+text-shadow: none;
+opacity: 0;
+}
+
+/* Brain mode placeholder - invisible but maintains space */
+.table-screen .character.brain-placeholder {
+visibility: hidden; /* Takes up space but is invisible */
+opacity: 0;
+}
+
+/* Cursor indicator */
+.cell-cursor {
+display: inline;
+color: #4caf50;
+font-size: 1.2rem;
+animation: blink 1s infinite;
+margin: 0; /* Remove any margin */
+font-weight: normal; /* Override bold from character */
+}
+
+@keyframes blink {
+0%, 50% { opacity: 1; }
+51%, 100% { opacity: 0; }
+}
+
+.table-speed {
+position: absolute; 
+top: 20px; 
+left: 20px;
+width: 84px; 
+height: 84px; 
+border-radius: 50%; 
+border: 5px solid white;
+display: flex; 
+align-items: center; 
+justify-content: center;
+color: white; 
+font-size: 1.2rem; 
+background: rgba(0,0,0,0.5); 
+text-shadow: 0 0 5px white;
+}
+
+/* Completion message styling */
+.completion-message {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.5rem;
+    color: #4caf50;
+    text-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+    padding: 10px 20px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 8px;
+    border: 1px solid #4caf50;
+}

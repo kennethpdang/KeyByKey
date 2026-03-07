@@ -51,6 +51,22 @@ export default function useHiddenText(initialText) {
 
   const handleKeyDown = useCallback(
     (e) => {
+      // Use document.activeElement for more reliable input detection
+      const activeElement = document.activeElement;
+      if (activeElement && (
+        activeElement.tagName === 'INPUT' || 
+        activeElement.tagName === 'TEXTAREA' || 
+        activeElement.tagName === 'SELECT' ||
+        activeElement.contentEditable === 'true'
+      )) {
+        return;
+      }
+      
+      // Check if a modal is open (modal-overlay class exists)
+      if (document.querySelector('.modal-overlay')) {
+        return;
+      }
+      
       if (completed || shaking) return;
 
       if (e.key !== " " && !/^[a-zA-Z0-9]$/.test(e.key)) {
