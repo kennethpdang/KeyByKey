@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState, useEffect, useCallback } from "react";
-import { processDisplayText, wordWrapText } from "../utils/textProcessing";
+import { processDisplayText } from "../utils/textProcessing";
 import GuidedTableCell from "./GuidedTableCell";
 import "../cascading_style_sheets/InteractiveTableMemorization.css";
 
@@ -31,7 +31,8 @@ export default function InteractiveTableMemorization({ table, mode = "BRAIN", fl
 	}, [rows, cols, table]);
 
 	const [activeCell, setActiveCell] = useState({ row: 0, col: 0 });
-	const [completedCells, setCompletedCells] = useState(new Set());
+	const [cellAccuracies, setCellAccuracies] = useState({});
+	const [cellFeedback, setCellFeedback] = useState({});
 	const postedRef = useRef(false);
 
 	const hasLongCell = useMemo(() =>
@@ -54,17 +55,35 @@ export default function InteractiveTableMemorization({ table, mode = "BRAIN", fl
 
 	// ========================= COMPLETION TRACKING =========================
 
+	// Live accuracy computed from all cells' keystroke feedback.
+	const liveAccuracy = useMemo(() => {
+		const entries = Object.values(cellFeedback);
+
+		if (entries.length === 0) {
+			return 0;
+		}
+
+		const totalCorrect = entries.reduce((sum, entry) => sum + entry.correct, 0);
+		const totalKeystrokes = entries.reduce((sum, entry) => sum + entry.total, 0);
+
+		if (totalKeystrokes === 0) {
+			return 0;
+		}
+
+		return Math.round((totalCorrect / totalKeystrokes) * 100);
+	}, [cellFeedback]);
+
 	const stats = useMemo(() => {
 		const nonPrefilledCells = cells.flat().filter(cell => !cell.prefilled && cell.text.length > 0);
 		const totalCount = nonPrefilledCells.length;
-		const completedCount = completedCells.size;
+		const completedCount = Object.keys(cellAccuracies).length;
 
 		return {
 			totalCells: totalCount,
-			totalAccuracy: totalCount === 0 ? 100 : Math.round((completedCount / totalCount) * 100),
+			totalAccuracy: liveAccuracy,
 			allCompleted: completedCount === totalCount && totalCount > 0
 		};
-	}, [cells, completedCells]);
+	}, [cells, cellAccuracies, liveAccuracy]);
 
 	useEffect(() => {
 		postedRef.current = false;
@@ -192,9 +211,16 @@ export default function InteractiveTableMemorization({ table, mode = "BRAIN", fl
 
 	// ========================= RENDERING =========================
 
-	const handleCellComplete = (cellKey) => {
-		setCompletedCells(previous => new Set([...previous, cellKey]));
+	const handleCellComplete = (cellKey, accuracy) => {
+		setCellAccuracies(previous => ({ ...previous, [cellKey]: accuracy }));
 	};
+
+	const handleFeedbackUpdate = useCallback((cellKey, correctCount, totalCount) => {
+		setCellFeedback(previous => ({
+			...previous,
+			[cellKey]: { correct: correctCount, total: totalCount }
+		}));
+	}, []);
 
 	const renderCell = (rowIndex, colIndex) => {
 		const cell = cells[rowIndex][colIndex];
@@ -204,11 +230,10 @@ export default function InteractiveTableMemorization({ table, mode = "BRAIN", fl
 
 		if (cell.prefilled) {
 			const processedText = processDisplayText(cell.text);
-			const wrappedText = wordWrapText(processedText, 42);
 
 			return (
 				<div className={`cell prefilled ${shouldCenter ? "centered-text" : ""}`} key={cellKey}>
-					<div className="prefilled-text">{wrappedText}</div>
+					<div className="prefilled-text">{processedText}</div>
 				</div>
 			);
 		}
@@ -221,6 +246,7 @@ export default function InteractiveTableMemorization({ table, mode = "BRAIN", fl
 				cellKey={cellKey}
 				isActive={isCellActive}
 				onComplete={handleCellComplete}
+				onFeedbackUpdate={handleFeedbackUpdate}
 				onFocus={() => {
 					if (!cell.prefilled && cell.text) {
 						setActiveCell({ row: rowIndex, col: colIndex });

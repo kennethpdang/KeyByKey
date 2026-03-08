@@ -2,7 +2,7 @@ const collectionService = require('../services/collectionServices.js');
 
 const getCollections = async (request, response) => {
 	try {
-		const collections = await collectionService.getAllCollections();
+		const collections = await collectionService.getAllCollections(request.user._id);
 		return response.status(200).json(collections);
 	} catch (error) {
 		return response.status(500).json({ error: error.message });
@@ -13,7 +13,7 @@ const getCollection = async (request, response) => {
 	const { id } = request.params;
 
 	try {
-		const collection = await collectionService.getCollectionById(id);
+		const collection = await collectionService.getCollectionById(id, request.user._id);
 		return response.status(200).json(collection);
 	} catch (error) {
 		if (error.message.includes('Invalid')) {
@@ -26,7 +26,7 @@ const getCollection = async (request, response) => {
 
 const createCollection = async (request, response) => {
 	try {
-		const collection = await collectionService.createCollection(request.body);
+		const collection = await collectionService.createCollection(request.body, request.user._id);
 		return response.status(201).json(collection);
 	} catch (error) {
 		return response.status(400).json({ error: error.message });
@@ -37,7 +37,7 @@ const deleteCollection = async (request, response) => {
 	const { id } = request.params;
 
 	try {
-		const collection = await collectionService.deleteCollection(id);
+		const collection = await collectionService.deleteCollection(id, request.user._id);
 		return response.status(200).json(collection);
 	} catch (error) {
 		if (error.message.includes('Invalid')) {
@@ -52,7 +52,7 @@ const updateCollection = async (request, response) => {
 	const { id } = request.params;
 
 	try {
-		const updatedCollection = await collectionService.updateCollection(id, request.body);
+		const updatedCollection = await collectionService.updateCollection(id, request.body, request.user._id);
 		return response.status(200).json(updatedCollection);
 	} catch (error) {
 		if (error.message.includes('Invalid')) {

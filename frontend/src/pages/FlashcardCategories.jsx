@@ -232,6 +232,7 @@ const FlashcardCategories = () => {
 								value={categoryHeader}
 								onChange={handleHeaderChange}
 								placeholder="Enter category title"
+								autoComplete="off"
 							/>
 						</div>
 						<div className="form-group">

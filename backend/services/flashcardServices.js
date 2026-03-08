@@ -4,11 +4,13 @@ const Collection = require('../models/collectionModel.js');
 
 const REPETITION_LADDER = [1, 2, 4, 8, 16, 32, 64, 128, 256, 365];
 
+// ========================= HELPERS =========================
+
 /**
-* Validates that a given ID is a valid MongoDB ObjectId.
-* @param {string} id
-* @param {string} label - Human-readable label for error messages (e.g. "flashcard").
-*/
+ * Validates that a given ID is a valid MongoDB ObjectId.
+ * @param {string} id
+ * @param {string} label - Human-readable label for error messages.
+ */
 function validateObjectId(id, label) {
 	if (!mongoose.Types.ObjectId.isValid(id)) {
 		throw new Error(`Invalid ${label} ID`);
@@ -16,12 +18,13 @@ function validateObjectId(id, label) {
 }
 
 /**
-* Finds a flashcard by ID or throws a descriptive error.
-* @param {string} id
-* @returns {Promise<Object>} The found flashcard document.
-*/
-async function findFlashcardOrThrow(id) {
-	const flashcard = await Flashcard.findById(id);
+ * Finds a flashcard owned by the given user, or throws a descriptive error.
+ * @param {string} flashcardId
+ * @param {string} userId
+ * @returns {Promise<Object>} The found flashcard document.
+ */
+async function findUserFlashcardOrThrow(flashcardId, userId) {
+	const flashcard = await Flashcard.findOne({ _id: flashcardId, user: userId });
 
 	if (!flashcard) {
 		throw new Error('Flashcard not found');
@@ -31,10 +34,9 @@ async function findFlashcardOrThrow(id) {
 }
 
 /**
-* Validates the structure of a table payload for table-type flashcards.
-* Ensures rows, cols, and cells are properly sized and typed.
-* @param {object} table
-*/
+ * Validates the structure of a table payload for table-type flashcards.
+ * @param {object} table
+ */
 function validateTablePayload(table) {
 	if (!table) {
 		throw new Error("Missing table payload");
@@ -74,11 +76,11 @@ function validateTablePayload(table) {
 }
 
 /**
-* Checks whether two dates fall on the same UTC calendar day.
-* @param {Date|null} firstDate
-* @param {Date|null} secondDate
-* @returns {boolean}
-*/
+ * Checks whether two dates fall on the same UTC calendar day.
+ * @param {Date|null} firstDate
+ * @param {Date|null} secondDate
+ * @returns {boolean}
+ */
 function isSameUtcDay(firstDate, secondDate) {
 	if (!firstDate || !secondDate) {
 		return false;
@@ -92,10 +94,10 @@ function isSameUtcDay(firstDate, secondDate) {
 }
 
 /**
-* Builds the document fields for a text-type flashcard.
-* @param {string} content
-* @returns {object} Partial document with content and table fields.
-*/
+ * Builds the document fields for a text-type flashcard.
+ * @param {string} content
+ * @returns {object}
+ */
 function buildTextCardFields(content) {
 	if (!content || !content.trim()) {
 		throw new Error('Content is required for text cards');
@@ -108,10 +110,10 @@ function buildTextCardFields(content) {
 }
 
 /**
-* Builds the document fields for a table-type flashcard.
-* @param {object} table - The table payload to validate and attach.
-* @returns {object} Partial document with content and table fields.
-*/
+ * Builds the document fields for a table-type flashcard.
+ * @param {object} table
+ * @returns {object}
+ */
 function buildTableCardFields(table) {
 	validateTablePayload(table);
 
@@ -121,32 +123,36 @@ function buildTableCardFields(table) {
 	};
 }
 
-async function getAllFlashcards() {
-	return await Flashcard.find({}).populate('collection').sort({ createdAt: -1 });
+// ========================= SERVICE FUNCTIONS =========================
+
+/**
+ * Returns all flashcards belonging to a specific user.
+ * @param {string} userId
+ */
+async function getAllFlashcards(userId) {
+	return await Flashcard.find({ user: userId }).populate('collectionRef').sort({ createdAt: -1 });
 }
 
 /**
-* @param {string} id - The ID of the flashcard.
-*/
-async function getFlashcardById(id) {
-	validateObjectId(id, 'flashcard');
-	return await findFlashcardOrThrow(id);
+ * @param {string} flashcardId
+ * @param {string} userId
+ */
+async function getFlashcardById(flashcardId, userId) {
+	validateObjectId(flashcardId, 'flashcard');
+	return await findUserFlashcardOrThrow(flashcardId, userId);
 }
 
 /**
-* Creates a new flashcard and verifies the parent collection exists.
-* @param {Object} data
-* @param {string} data.header
-* @param {string} [data.content]
-* @param {string} data.collection - The parent collection's ObjectId.
-* @param {string} [data.type='text']
-* @param {object} [data.table=null]
-*/
-async function createFlashcard(data) {
+ * Creates a new flashcard owned by the user.
+ * Verifies the parent collection exists and belongs to the same user.
+ * @param {Object} data
+ * @param {string} userId
+ */
+async function createFlashcard(data, userId) {
 	const {
 		header,
 		content = '',
-		collection: collectionId,
+		collectionRef: collectionId,
 		type = 'text',
 		table = null
 	} = data;
@@ -159,7 +165,7 @@ async function createFlashcard(data) {
 		throw new Error('Collection ID is required');
 	}
 
-	const parentCollection = await Collection.findById(collectionId);
+	const parentCollection = await Collection.findOne({ _id: collectionId, user: userId });
 
 	if (!parentCollection) {
 		throw new Error('Collection not found');
@@ -171,22 +177,24 @@ async function createFlashcard(data) {
 
 	const flashcard = await Flashcard.create({
 		header: header.trim(),
-		collection: collectionId,
+		collectionRef: collectionId,
+		user: userId,
 		type,
 		...typeSpecificFields
 	});
 
-	return await Flashcard.findById(flashcard._id).populate('collection');
+	return await Flashcard.findById(flashcard._id).populate('collectionRef');
 }
 
 /**
-* Deletes a flashcard by ID.
-* @param {string} id
-*/
-async function deleteFlashcard(id) {
-	validateObjectId(id, 'flashcard');
+ * Deletes a flashcard owned by the user.
+ * @param {string} flashcardId
+ * @param {string} userId
+ */
+async function deleteFlashcard(flashcardId, userId) {
+	validateObjectId(flashcardId, 'flashcard');
 
-	const flashcard = await Flashcard.findOneAndDelete({ _id: id });
+	const flashcard = await Flashcard.findOneAndDelete({ _id: flashcardId, user: userId });
 
 	if (!flashcard) {
 		throw new Error('Flashcard not found');
@@ -196,15 +204,15 @@ async function deleteFlashcard(id) {
 }
 
 /**
-* Updates only the allowed fields on a flashcard.
-* Spaced repetition fields are managed exclusively through reviewFlashcard.
-* @param {string} id
-* @param {Object} data - The update data.
-*/
-async function updateFlashcard(id, data) {
-	validateObjectId(id, 'flashcard');
+ * Updates only the allowed fields on a user's flashcard.
+ * @param {string} flashcardId
+ * @param {Object} data
+ * @param {string} userId
+ */
+async function updateFlashcard(flashcardId, data, userId) {
+	validateObjectId(flashcardId, 'flashcard');
 
-	const existingFlashcard = await findFlashcardOrThrow(id);
+	await findUserFlashcardOrThrow(flashcardId, userId);
 
 	const allowedUpdates = {};
 
@@ -212,16 +220,16 @@ async function updateFlashcard(id, data) {
 		allowedUpdates.header = data.header;
 	}
 
-	if (data.collection !== undefined) {
-		validateObjectId(data.collection, 'collection');
+	if (data.collectionRef !== undefined) {
+		validateObjectId(data.collectionRef, 'collection');
 
-		const parentCollection = await Collection.findById(data.collection);
+		const parentCollection = await Collection.findOne({ _id: data.collectionRef, user: userId });
 
 		if (!parentCollection) {
 			throw new Error('Target collection not found');
 		}
 
-		allowedUpdates.collection = data.collection;
+		allowedUpdates.collectionRef = data.collectionRef;
 	}
 
 	if (data.type !== undefined) {
@@ -241,7 +249,7 @@ async function updateFlashcard(id, data) {
 	}
 
 	const updatedFlashcard = await Flashcard.findOneAndUpdate(
-		{ _id: id },
+		{ _id: flashcardId, user: userId },
 		allowedUpdates,
 		{ new: true, runValidators: true }
 	);
@@ -254,15 +262,15 @@ async function updateFlashcard(id, data) {
 }
 
 /**
-* @param {string} id
-* @param {object} reviewData
-* @param {string} reviewData.mode - The review mode ("BRAIN", "READ", "SPIN").
-* @param {number} reviewData.accuracy - The accuracy percentage (0–100).
-*/
-async function reviewFlashcard(id, { mode, accuracy }) {
-	validateObjectId(id, 'flashcard');
+ * Processes a review attempt for a user's flashcard.
+ * @param {string} flashcardId
+ * @param {object} reviewData
+ * @param {string} userId
+ */
+async function reviewFlashcard(flashcardId, { mode, accuracy }, userId) {
+	validateObjectId(flashcardId, 'flashcard');
 
-	const card = await findFlashcardOrThrow(id);
+	const card = await findUserFlashcardOrThrow(flashcardId, userId);
 	const now = new Date();
 
 	const isMasteryAttempt = (

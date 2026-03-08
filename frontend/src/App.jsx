@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import React, { useEffect } from 'react';
+import ProtectedRoute from "./components/ProtectedRoute";
 
 // Context
 import { AuthProvider } from "./context/AuthContext";
@@ -38,8 +39,8 @@ function App() {
 						<Navbar />
 						<Routes>
 							<Route path="/" element={<Home />} />
-							<Route path="/memorize/:id?" element={<Memorize />} />
-							<Route path="/flashcard-categories" element={<FlashcardCategories />} />
+							<Route path="/memorize/:id?" element={<ProtectedRoute><Memorize /></ProtectedRoute>} />
+							<Route path="/flashcard-categories" element={<ProtectedRoute><FlashcardCategories /></ProtectedRoute>} />
 							<Route path="/about-us" element={<AboutUs />} />
 						</Routes>
 					</BrowserRouter>

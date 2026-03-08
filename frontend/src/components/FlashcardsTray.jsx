@@ -193,7 +193,7 @@ function FlashcardsTray({ isOpen, togglePanel, flashcards, handleDelete, onFlash
 				type: "table",
 				content: "",
 				table: newTable,
-				collection: newCategory,
+				collectionRef: newCategory,
 			};
 		} else {
 			if (!newContent || !newContent.trim()) {
@@ -206,7 +206,7 @@ function FlashcardsTray({ isOpen, togglePanel, flashcards, handleDelete, onFlash
 				type: "text",
 				content: newContent,
 				table: null,
-				collection: newCategory,
+				collectionRef: newCategory,
 			};
 		}
 
@@ -215,7 +215,7 @@ function FlashcardsTray({ isOpen, togglePanel, flashcards, handleDelete, onFlash
 			return;
 		}
 
-		if (!body.collection) {
+		if (!body.collectionRef) {
 			setError("Please choose a collection.");
 			return;
 		}
@@ -271,7 +271,7 @@ function FlashcardsTray({ isOpen, togglePanel, flashcards, handleDelete, onFlash
 		setFlashcardToEdit(flashcard);
 		setEditHeader(flashcard.header);
 		setEditContent(flashcard.content || "");
-		setEditCategory(flashcard.collection ? flashcard.collection._id : "");
+		setEditCategory(flashcard.collectionRef ? flashcard.collectionRef._id : "");
 		setEditType(flashcard.type || "text");
 		setEditTable(flashcard.table || null);
 		setEditModalVisible(true);
@@ -298,14 +298,14 @@ function FlashcardsTray({ isOpen, togglePanel, flashcards, handleDelete, onFlash
 				type: 'table',
 				content: '',
 				table: editTable,
-				collection: editCategory
+				collectionRef: editCategory
 			}
 			: {
 				header: editHeader,
 				type: 'text',
 				content: editContent,
 				table: null,
-				collection: editCategory
+				collectionRef: editCategory
 			};
 
 		try {
@@ -388,7 +388,7 @@ function FlashcardsTray({ isOpen, togglePanel, flashcards, handleDelete, onFlash
 									</div>
 								</div>
 								<div className="flashcard-category">
-									{card.collection && card.collection.title}
+								{card.collectionRef && card.collectionRef.title}
 								</div>
 								<div className="flashcard-description">
 									{getCardDescription(card)}
@@ -421,6 +421,7 @@ function FlashcardsTray({ isOpen, togglePanel, flashcards, handleDelete, onFlash
 									value={newHeader}
 									onChange={(event) => setNewHeader(event.target.value)}
 									placeholder="Enter flashcard header/question"
+									autoComplete="off"
 									required
 								/>
 							</div>
@@ -476,6 +477,7 @@ function FlashcardsTray({ isOpen, togglePanel, flashcards, handleDelete, onFlash
 									id="editFlashcardHeader"
 									value={editHeader}
 									onChange={(event) => setEditHeader(event.target.value)}
+									autoComplete="off"
 									required
 								/>
 							</div>

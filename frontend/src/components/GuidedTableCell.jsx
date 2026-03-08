@@ -1,7 +1,6 @@
 import React, { useMemo, useRef, useState, useEffect, useCallback } from "react";
 import {
 	processDisplayText,
-	wordWrapText,
 	getWordLengths,
 	buildSpinVisibility
 } from "../utils/textProcessing";
@@ -11,11 +10,15 @@ import "../cascading_style_sheets/InteractiveTableMemorization.css";
 /**
  * A single interactive table cell that handles guided typing across all three modes.
  * Each cell independently tracks its own typing state, feedback, and completion.
+ *
+ * Text wrapping is handled by CSS (white-space: pre-wrap / word-break: break-word),
+ * not by manual character counting — so cells use the full available width.
  */
 export default function GuidedTableCell({
 	target,
 	mode,
 	onComplete,
+	onFeedbackUpdate,
 	cellKey,
 	isActive,
 	onFocus,
@@ -32,8 +35,7 @@ export default function GuidedTableCell({
 	const cellRef = useRef(null);
 
 	const strategy = ModeStrategies[mode];
-	const processedOriginal = useMemo(() => processDisplayText(target), [target]);
-	const displayTarget = useMemo(() => wordWrapText(processedOriginal, 42), [processedOriginal]);
+	const processedText = useMemo(() => processDisplayText(target), [target]);
 	const targetForMode = useMemo(() => strategy.getTargetText(target), [strategy, target]);
 	const wordLengths = useMemo(() => getWordLengths(targetForMode), [targetForMode]);
 
@@ -42,33 +44,10 @@ export default function GuidedTableCell({
 			return null;
 		}
 
-		return buildSpinVisibility(displayTarget);
-	}, [mode, displayTarget]);
+		return buildSpinVisibility(processedText);
+	}, [mode, processedText]);
 
-	const lineBreakPositions = useMemo(() => {
-		if (mode !== "BRAIN") {
-			return [];
-		}
-
-		const breaks = [];
-		let originalPosition = 0;
-
-		for (let displayIndex = 0; displayIndex < displayTarget.length; displayIndex++) {
-			if (displayTarget[displayIndex] === '\n') {
-				if (originalPosition >= processedOriginal.length || processedOriginal[originalPosition] !== '\n') {
-					breaks.push(originalPosition);
-				} else {
-					originalPosition++;
-				}
-			} else {
-				originalPosition++;
-			}
-		}
-
-		return breaks;
-	}, [mode, displayTarget, processedOriginal]);
-
-	// Reset state when the target text changes (e.g., switching flashcards).
+	// Reset state when the target text changes.
 	const resetState = useCallback(() => {
 		setTypedText("");
 		setFeedback([]);
@@ -82,21 +61,43 @@ export default function GuidedTableCell({
 		resetState();
 	}, [target, resetState]);
 
-	useEffect(() => {
-		if (currentWordIndex >= wordLengths.length && wordLengths.length > 0) {
-			setCompleted(true);
-
-			if (onComplete) {
-				onComplete(cellKey);
-			}
+	// Centralized completion handler — ensures onComplete always fires.
+	const markCompleted = useCallback((currentFeedback) => {
+		if (completed) {
+			return;
 		}
-	}, [currentWordIndex, wordLengths, cellKey, onComplete]);
+
+		setCompleted(true);
+
+		if (onComplete) {
+			const correctCount = currentFeedback.filter(item => item.correct).length;
+			const totalCount = currentFeedback.length;
+			const cellAccuracy = totalCount === 0 ? 100 : Math.round((correctCount / totalCount) * 100);
+
+			onComplete(cellKey, cellAccuracy);
+		}
+	}, [completed, onComplete, cellKey]);
+
+	useEffect(() => {
+		if (currentWordIndex >= wordLengths.length && wordLengths.length > 0 && !completed) {
+			markCompleted(feedback);
+		}
+	}, [currentWordIndex, wordLengths, completed, feedback, markCompleted]);
 
 	useEffect(() => {
 		if (isActive && cellRef.current) {
 			cellRef.current.focus();
 		}
 	}, [isActive]);
+
+	// Report accuracy to parent on every keystroke.
+	useEffect(() => {
+		if (onFeedbackUpdate && feedback.length > 0) {
+			const correctCount = feedback.filter(item => item.correct).length;
+			const totalCount = feedback.length;
+			onFeedbackUpdate(cellKey, correctCount, totalCount);
+		}
+	}, [feedback, cellKey, onFeedbackUpdate]);
 
 	// ========================= TYPING HANDLER =========================
 
@@ -123,7 +124,7 @@ export default function GuidedTableCell({
 		if (currentIndex >= targetForMode.length) {
 			setTypedText(newTyped);
 			setFeedback(newFeedback);
-			setCompleted(true);
+			markCompleted(newFeedback);
 			return;
 		}
 
@@ -139,6 +140,14 @@ export default function GuidedTableCell({
 				newTyped = afterSpace.newTyped;
 				newFeedback = afterSpace.newFeedback;
 				currentIndex = afterSpace.newPointer;
+
+				if (currentIndex >= targetForMode.length) {
+					setTypedText(newTyped);
+					setFeedback(newFeedback);
+					setPointer(currentIndex);
+					markCompleted(newFeedback);
+					return;
+				}
 			}
 
 			setTypedText(newTyped);
@@ -169,16 +178,16 @@ export default function GuidedTableCell({
 		currentIndex++;
 		setTypedAlphanumericsInCurrentWord(count => count + 1);
 
-		if (currentIndex >= targetForMode.length) {
-			setCompleted(true);
-		}
-
 		setTypedText(newTyped);
 		setFeedback(newFeedback);
 		setPointer(currentIndex);
+
+		if (currentIndex >= targetForMode.length) {
+			markCompleted(newFeedback);
+		}
 	}, [
 		isActive, completed, shaking, pointer, targetForMode, typedText, feedback,
-		currentWordIndex, typedAlphanumericsInCurrentWord, wordLengths, strategy
+		currentWordIndex, typedAlphanumericsInCurrentWord, wordLengths, strategy, markCompleted
 	]);
 
 	useEffect(() => {
@@ -210,30 +219,9 @@ export default function GuidedTableCell({
 		);
 	};
 
-	/**
-	 * Maps a display position back to its original (pre-wrap) position
-	 * to find the correct feedback entry.
-	 */
-	const getFeedbackForDisplayPosition = (displayIndex) => {
-		if (displayTarget.length === processedOriginal.length) {
-			return displayIndex < feedback.length ? feedback[displayIndex] : null;
-		}
-
-		let originalIndex = 0;
-
-		for (let scanIndex = 0; scanIndex <= displayIndex && originalIndex < processedOriginal.length; scanIndex++) {
-			if (displayTarget[scanIndex] === processedOriginal[originalIndex]) {
-				originalIndex++;
-			}
-			// else: wrapping newline — skip without advancing original
-		}
-
-		return originalIndex <= feedback.length ? feedback[originalIndex - 1] : null;
-	};
-
 	const renderContent = () => {
 		const showCursor = isActive && pointer === 0 && !completed;
-		const displayCharacters = Array.from(displayTarget);
+		const displayCharacters = Array.from(processedText);
 
 		if (mode === "BRAIN") {
 			return (
@@ -246,13 +234,14 @@ export default function GuidedTableCell({
 			);
 		}
 
+		// READ/SPIN modes — feedback maps 1:1 with processedText positions.
 		return (
 			<>
 				{showCursor && <span className="cell-cursor">|</span>}
-				{displayCharacters.map((character, displayIndex) => {
-					const feedbackItem = getFeedbackForDisplayPosition(displayIndex);
-					const isHidden = mode === "SPIN" && !spinVisibility?.[displayIndex];
-					return renderCharacter(character, displayIndex, feedbackItem, isHidden);
+				{displayCharacters.map((character, charIndex) => {
+					const feedbackItem = charIndex < feedback.length ? feedback[charIndex] : null;
+					const isHidden = mode === "SPIN" && !spinVisibility?.[charIndex];
+					return renderCharacter(character, charIndex, feedbackItem, isHidden);
 				})}
 			</>
 		);
@@ -264,7 +253,6 @@ export default function GuidedTableCell({
 		}
 
 		const renderItems = [];
-		let characterCount = 0;
 
 		for (let feedbackIndex = 0; feedbackIndex < feedback.length; feedbackIndex++) {
 			const item = feedback[feedbackIndex];
@@ -277,11 +265,6 @@ export default function GuidedTableCell({
 				renderItems.push({ type: 'break' });
 			} else {
 				renderItems.push({ type: 'char', char: item.char, feedback: item });
-				characterCount++;
-
-				if (lineBreakPositions.includes(characterCount)) {
-					renderItems.push({ type: 'break' });
-				}
 			}
 		}
 
@@ -320,7 +303,7 @@ export default function GuidedTableCell({
 				{mode === "BRAIN" && !completed ? (
 					<div className="brain-mode">
 						<div className="brain-placeholder-layer">
-							{Array.from(displayTarget).map((character, index) =>
+							{Array.from(processedText).map((character, index) =>
 								renderCharacter(character, index, null, true)
 							)}
 						</div>

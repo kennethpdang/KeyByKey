@@ -1,13 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { GoogleLogin } from '@react-oauth/google';
+import { useGoogleLogin } from '@react-oauth/google';
 import {
 	Brain,
 	CodepenLogo,
 	UsersThree,
 	CaretDown,
 	DotsNine,
-	SignOut
+	SignOut,
+	GoogleLogo
 } from '@phosphor-icons/react';
 import { useAuth } from '../context/AuthContext';
 import '../cascading_style_sheets/Navbar.css';
@@ -21,14 +22,41 @@ const menuItems = [
 function Navbar() {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [isProfileOpen, setIsProfileOpen] = useState(false);
-	const [showGoogleLogin, setShowGoogleLogin] = useState(false);
 
 	const menuRef = useRef(null);
-	const menuToggleRef = useRef(null);
+	const menuToggleDesktopRef = useRef(null);
+	const menuToggleMobileRef = useRef(null);
 	const profileRef = useRef(null);
 	const profileToggleRef = useRef(null);
 
 	const { user, login, logout, isAuthenticated, loading } = useAuth();
+
+	// ========================= GOOGLE LOGIN =========================
+
+	const googleLogin = useGoogleLogin({
+		onSuccess: async (tokenResponse) => {
+			try {
+				const backendResponse = await fetch('/api/auth/google', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					credentials: 'include',
+					body: JSON.stringify({ accessToken: tokenResponse.access_token })
+				});
+
+				if (!backendResponse.ok) {
+					throw new Error('Backend authentication failed');
+				}
+
+				const userData = await backendResponse.json();
+				login(userData);
+			} catch (error) {
+				console.error("Login failed:", error);
+			}
+		},
+		onError: () => {
+			console.error("Google login failed — check Client ID and authorized origins");
+		}
+	});
 
 	// ========================= MENU TOGGLE =========================
 
@@ -48,22 +76,8 @@ function Navbar() {
 		setIsMenuOpen(false);
 	};
 
-	const handleLoginClick = () => {
-		setShowGoogleLogin(true);
-	};
-
-	const handleGoogleSuccess = async (credentialResponse) => {
-		try {
-			await login(credentialResponse);
-			setShowGoogleLogin(false);
-		} catch (error) {
-			console.error("Login failed:", error);
-		}
-	};
-
-	const handleGoogleError = () => {
-		console.error("Google login failed");
-		setShowGoogleLogin(false);
+	const handleSignIn = () => {
+		googleLogin();
 	};
 
 	const handleLogout = async () => {
@@ -73,44 +87,42 @@ function Navbar() {
 
 	// ========================= CLICK OUTSIDE =========================
 
+	const isClickInsideRef = (ref, event) => {
+		return ref.current && ref.current.contains(event.target);
+	};
+
 	useEffect(() => {
 		const handleClickOutside = (event) => {
 			// Close nav menu
-			if (
-				isMenuOpen &&
-				menuRef.current &&
-				!menuRef.current.contains(event.target) &&
-				menuToggleRef.current &&
-				!menuToggleRef.current.contains(event.target)
-			) {
-				closeMenu();
+			if (isMenuOpen) {
+				const isInsideMenu = isClickInsideRef(menuRef, event);
+				const isInsideDesktopToggle = isClickInsideRef(menuToggleDesktopRef, event);
+				const isInsideMobileToggle = isClickInsideRef(menuToggleMobileRef, event);
+
+				if (!isInsideMenu && !isInsideDesktopToggle && !isInsideMobileToggle) {
+					closeMenu();
+				}
 			}
 
 			// Close profile dropdown
-			if (
-				isProfileOpen &&
-				profileRef.current &&
-				!profileRef.current.contains(event.target) &&
-				profileToggleRef.current &&
-				!profileToggleRef.current.contains(event.target)
-			) {
-				setIsProfileOpen(false);
-			}
+			if (isProfileOpen) {
+				const isInsideProfile = isClickInsideRef(profileRef, event);
+				const isInsideProfileToggle = isClickInsideRef(profileToggleRef, event);
 
-			// Close Google login popup if clicking outside
-			if (showGoogleLogin) {
-				setShowGoogleLogin(false);
+				if (!isInsideProfile && !isInsideProfileToggle) {
+					setIsProfileOpen(false);
+				}
 			}
 		};
 
-		if (isMenuOpen || isProfileOpen || showGoogleLogin) {
+		if (isMenuOpen || isProfileOpen) {
 			document.addEventListener("mousedown", handleClickOutside);
 		}
 
 		return () => {
 			document.removeEventListener("mousedown", handleClickOutside);
 		};
-	}, [isMenuOpen, isProfileOpen, showGoogleLogin]);
+	}, [isMenuOpen, isProfileOpen]);
 
 	// ========================= RENDER =========================
 
@@ -121,67 +133,26 @@ function Navbar() {
 
 		if (isAuthenticated) {
 			return (
-				<div className="profile-wrapper">
-					<button
-						className="profile-button"
-						onClick={handleToggleProfile}
-						ref={profileToggleRef}
-					>
-						<img
-							src={user.picture}
-							alt={user.name}
-							className="profile-picture"
-							referrerPolicy="no-referrer"
-						/>
-						<CaretDown
-							size={12}
-							weight="bold"
-							className={`profile-caret ${isProfileOpen ? "rotated" : ""}`}
-						/>
-					</button>
-
-					{isProfileOpen && (
-						<div className="profile-dropdown" ref={profileRef}>
-							<div className="profile-info">
-								<img
-									src={user.picture}
-									alt={user.name}
-									className="profile-dropdown-picture"
-									referrerPolicy="no-referrer"
-								/>
-								<div className="profile-details">
-									<span className="profile-name">{user.name}</span>
-									<span className="profile-email">{user.email}</span>
-								</div>
-							</div>
-							<div className="profile-divider"></div>
-							<button className="profile-menu-item" onClick={handleLogout}>
-								<SignOut size={18} />
-								<span>Sign out</span>
-							</button>
-						</div>
-					)}
-				</div>
-			);
-		}
-
-		if (showGoogleLogin) {
-			return (
-				<div className="google-login-wrapper">
-					<GoogleLogin
-						onSuccess={handleGoogleSuccess}
-						onError={handleGoogleError}
-						size="medium"
-						theme="filled_black"
-						shape="pill"
+				<button
+					className="sign-in-button"
+					onClick={handleToggleProfile}
+					ref={profileToggleRef}
+				>
+					<img
+						src={user.picture}
+						alt={user.name}
+						className="sign-in-profile-picture"
+						referrerPolicy="no-referrer"
 					/>
-				</div>
+					<span>{user.name}</span>
+				</button>
 			);
 		}
 
 		return (
-			<button className="sign-in-button" onClick={handleLoginClick}>
-				Sign in
+			<button className="sign-in-button" onClick={handleSignIn}>
+				<GoogleLogo size={18} weight="bold" />
+				<span>Sign in</span>
 			</button>
 		);
 	};
@@ -200,7 +171,7 @@ function Navbar() {
 					<button
 						className="navbar-toggle navbar-toggle-desktop"
 						onClick={handleToggleMenu}
-						ref={menuToggleRef}
+						ref={menuToggleDesktopRef}
 					>
 						<span className="menu-label">Menu</span>
 						<CaretDown
@@ -214,7 +185,7 @@ function Navbar() {
 					<button
 						className="navbar-toggle navbar-toggle-mobile"
 						onClick={handleToggleMenu}
-						ref={menuToggleRef}
+						ref={menuToggleMobileRef}
 					>
 						<DotsNine size={24} color="#fff" />
 					</button>
@@ -224,7 +195,7 @@ function Navbar() {
 				</div>
 			</div>
 
-			{/* Navigation dropdown */}
+			{/* Navigation dropdown — positioned under navbar */}
 			{isMenuOpen && (
 				<div className="navbar-menu" ref={menuRef}>
 					{menuItems.map(({ to, label, icon: Icon }) => (
@@ -240,6 +211,29 @@ function Navbar() {
 							</div>
 						</Link>
 					))}
+				</div>
+			)}
+
+			{/* Profile dropdown — positioned under navbar */}
+			{isProfileOpen && isAuthenticated && (
+				<div className="profile-dropdown" ref={profileRef}>
+					<div className="profile-info">
+						<img
+							src={user.picture}
+							alt={user.name}
+							className="profile-dropdown-picture"
+							referrerPolicy="no-referrer"
+						/>
+						<div className="profile-details">
+							<span className="profile-name">{user.name}</span>
+							<span className="profile-email">{user.email}</span>
+						</div>
+					</div>
+					<div className="profile-divider"></div>
+					<button className="profile-menu-item" onClick={handleLogout}>
+						<SignOut size={18} />
+						<span>Sign out</span>
+					</button>
 				</div>
 			)}
 		</nav>

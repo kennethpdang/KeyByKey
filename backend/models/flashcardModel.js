@@ -34,6 +34,12 @@ const TableSchema = new Schema({
 }, { _id: false });
 
 const flashcardSchema = new Schema({
+	user: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'User',
+		required: true,
+		index: true
+	},
 	header: {
 		type: String,
 		required: true
@@ -45,7 +51,7 @@ const flashcardSchema = new Schema({
 			return this.type !== 'table';
 		}
 	},
-	collection: {
+	collectionRef: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'Collection',
 		required: true,

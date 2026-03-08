@@ -2,7 +2,7 @@ const flashcardService = require('../services/flashcardServices.js');
 
 const getFlashcards = async (request, response) => {
 	try {
-		const flashcards = await flashcardService.getAllFlashcards();
+		const flashcards = await flashcardService.getAllFlashcards(request.user._id);
 		return response.status(200).json(flashcards);
 	} catch (error) {
 		return response.status(500).json({ error: error.message });
@@ -13,7 +13,7 @@ const getFlashcard = async (request, response) => {
 	const { id } = request.params;
 
 	try {
-		const flashcard = await flashcardService.getFlashcardById(id);
+		const flashcard = await flashcardService.getFlashcardById(id, request.user._id);
 		return response.status(200).json(flashcard);
 	} catch (error) {
 		if (error.message.includes('Invalid')) {
@@ -26,7 +26,7 @@ const getFlashcard = async (request, response) => {
 
 const createFlashcard = async (request, response) => {
 	try {
-		const flashcard = await flashcardService.createFlashcard(request.body);
+		const flashcard = await flashcardService.createFlashcard(request.body, request.user._id);
 		return response.status(201).json(flashcard);
 	} catch (error) {
 		return response.status(400).json({ error: error.message });
@@ -37,7 +37,7 @@ const deleteFlashcard = async (request, response) => {
 	const { id } = request.params;
 
 	try {
-		const flashcard = await flashcardService.deleteFlashcard(id);
+		const flashcard = await flashcardService.deleteFlashcard(id, request.user._id);
 		return response.status(200).json(flashcard);
 	} catch (error) {
 		if (error.message.includes('Invalid')) {
@@ -52,7 +52,7 @@ const updateFlashcard = async (request, response) => {
 	const { id } = request.params;
 
 	try {
-		const updatedFlashcard = await flashcardService.updateFlashcard(id, request.body);
+		const updatedFlashcard = await flashcardService.updateFlashcard(id, request.body, request.user._id);
 		return response.status(200).json(updatedFlashcard);
 	} catch (error) {
 		if (error.message.includes('Invalid')) {
@@ -67,7 +67,7 @@ const reviewFlashcard = async (request, response) => {
 	const { id } = request.params;
 
 	try {
-		const card = await flashcardService.reviewFlashcard(id, request.body);
+		const card = await flashcardService.reviewFlashcard(id, request.body, request.user._id);
 		return response.status(200).json(card);
 	} catch (error) {
 		if (error.message.includes('Invalid')) {

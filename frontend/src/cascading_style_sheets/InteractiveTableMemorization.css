@@ -18,15 +18,15 @@ width: 100%;
 .guided-cell.centered-text .brain-typed-layer {
 text-align: center;
 }.guided-cell.shake {
-    animation: shake 0.5s;
+	animation: shake 0.5s;
 }
 
 @keyframes shake {
-    0% { transform: translate(0, 0); }
-    25% { transform: translate(-5px, 0); }
-    50% { transform: translate(5px, 0); }
-    75% { transform: translate(-5px, 0); }
-    100% { transform: translate(0, 0); }
+	0% { transform: translate(0, 0); }
+	25% { transform: translate(-5px, 0); }
+	50% { transform: translate(5px, 0); }
+	75% { transform: translate(-5px, 0); }
+	100% { transform: translate(0, 0); }
 }.table-screen {
 width: 100%;
 height: 100%;
@@ -46,11 +46,12 @@ overflow: hidden;
 }
 
 .memo-table { 
-border-collapse: collapse; 
-background: #1a1d21;
-width: 100%;
-border-radius: 12px;
-overflow: hidden;
+    border-collapse: collapse; 
+    background: #1a1d21;
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    table-layout: fixed;
 }
 
 .memo-table td { 
@@ -217,15 +218,15 @@ text-shadow: 0 0 5px white;
 
 /* Completion message styling */
 .completion-message {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 1.5rem;
-    color: #4caf50;
-    text-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
-    padding: 10px 20px;
-    background: rgba(0, 0, 0, 0.7);
-    border-radius: 8px;
-    border: 1px solid #4caf50;
+	position: absolute;
+	bottom: 20px;
+	left: 50%;
+	transform: translateX(-50%);
+	font-size: 1.5rem;
+	color: #4caf50;
+	text-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+	padding: 10px 20px;
+	background: rgba(0, 0, 0, 0.7);
+	border-radius: 8px;
+	border: 1px solid #4caf50;
 }

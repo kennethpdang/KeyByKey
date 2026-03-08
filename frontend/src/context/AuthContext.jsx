@@ -29,29 +29,11 @@ export function AuthProvider({ children }) {
 	}, []);
 
 	/**
-	 * Sends the Google credential token to the backend for verification.
-	 * On success, stores the returned user data in state.
+	 * Stores the authenticated user data in state.
+	 * Called by the Navbar after the backend confirms the login.
 	 */
-	const login = useCallback(async (credentialResponse) => {
-		try {
-			const response = await fetch('/api/auth/google', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
-				body: JSON.stringify({ token: credentialResponse.credential })
-			});
-
-			if (!response.ok) {
-				throw new Error('Authentication failed');
-			}
-
-			const userData = await response.json();
-			setUser(userData);
-			return userData;
-		} catch (error) {
-			console.error("Login failed:", error);
-			throw error;
-		}
+	const login = useCallback((userData) => {
+		setUser(userData);
 	}, []);
 
 	/**
