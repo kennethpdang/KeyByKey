@@ -17,6 +17,7 @@ const requireAuth = require('./middleware/requireAuth.js');
 
 // Create express app
 const app = express();
+app.set('trust proxy', 1);
 
 // ========================= MIDDLEWARE =========================
 
@@ -43,7 +44,7 @@ app.use(session({
 		maxAge: 7 * 24 * 60 * 60 * 1000,
 		httpOnly: true,
 		secure: process.env.NODE_ENV === 'production',
-		sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+		sameSite: 'lax'
 	}
 }));
 
