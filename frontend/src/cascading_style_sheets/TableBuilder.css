@@ -1,19 +1,158 @@
-.sizepicker { display: inline-block; }
-.sizepicker-grid { display: inline-flex; flex-direction: column; gap: 4px; background: #15181b; padding: 6px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.12); }
-.sizepicker-row { display: flex; gap: 4px; }
-.sizepicker-cell { width: 18px; height: 18px; background: rgba(255,255,255,0.1); border-radius: 3px; cursor: pointer; }
-.sizepicker-cell.active { background: rgba(76,175,80,0.9); }
-.sizepicker-label { margin-top: 6px; font-size: 0.9rem; color: #ddd; text-align: center; }
+/* ========================= SIZE PICKER ========================= */
 
-.table-editor { margin-top: 12px; }
-.table-editor .controls { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
-.table-editor .controls button { background: #1e1e1e; border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
-.table-editor .controls button:hover { transform: scale(1.03); }
-.table-editor-table { border-collapse: collapse; width: 100%; max-width: 100%; }
-.table-editor-table td { border: 1px solid rgba(255,255,255,0.2); padding: 6px; vertical-align: top; }
-.table-editor-cell { position: relative; }
-.table-editor-cell .prefill-toggle { position: absolute; top: 6px; right: 6px; font-size: 0.8rem; cursor: pointer; opacity: 0.8; }
-.table-editor-cell .prefill-toggle input { margin-right: 4px; }
+.sizepicker {
+	display: inline-block;
+}
 
-.table-editor-cell textarea { width: 100%; min-height: 48px; background: transparent; color: #fff; border: none; outline: none; resize: none; overflow: hidden; }
-.table-editor-cell .cell-textarea { padding: 4px; line-height: 1.4; }
+.sizepicker-grid {
+	display: inline-flex;
+	flex-direction: column;
+	gap: 4px;
+	background: #15181b;
+	padding: 6px;
+	border-radius: 8px;
+	border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.sizepicker-row {
+	display: flex;
+	gap: 4px;
+}
+
+.sizepicker-cell {
+	width: 18px;
+	height: 18px;
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 3px;
+	cursor: pointer;
+}
+
+.sizepicker-cell.active {
+	background: rgba(76, 175, 80, 0.9);
+}
+
+.sizepicker-label {
+	margin-top: 6px;
+	font-size: 0.9rem;
+	color: #ddd;
+	text-align: center;
+}
+
+/* ========================= TABLE EDITOR (shared) ========================= */
+
+.table-editor {
+	margin-top: 12px;
+}
+
+.table-editor .controls {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+	margin-bottom: 8px;
+}
+
+.table-editor .controls button {
+	background: #1e1e1e;
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	color: #fff;
+	padding: 6px 10px;
+	border-radius: 6px;
+	cursor: pointer;
+}
+
+.table-editor .controls button:hover {
+	transform: scale(1.03);
+}
+
+/* Shared cell editor styles */
+.table-editor-cell {
+	display: flex;
+	flex-direction: column;
+	padding: 6px;
+	gap: 4px;
+}
+
+.cell-editor-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.cell-label {
+	font-size: 0.75rem;
+	color: #888;
+}
+
+.prefill-toggle {
+	display: flex;
+	align-items: center;
+	font-size: 0.8rem;
+	cursor: pointer;
+	opacity: 0.8;
+	user-select: none;
+}
+
+.prefill-toggle input {
+	margin-right: 4px;
+}
+
+.table-editor-cell textarea {
+	width: 100%;
+	min-height: 48px;
+	background: transparent;
+	color: #fff;
+	border: none;
+	outline: none;
+	resize: none;
+	overflow: hidden;
+	box-sizing: border-box;
+	padding: 4px;
+	line-height: 1.4;
+}
+
+/* ========================= GRID LAYOUT (small tables) ========================= */
+
+.table-editor-table {
+	border-collapse: collapse;
+	width: 100%;
+	max-width: 100%;
+}
+
+.table-editor-table td {
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	padding: 0;
+	vertical-align: top;
+}
+
+/* In grid mode, hide the cell label to save space — the position is obvious */
+.table-editor-table .cell-label {
+	display: none;
+}
+
+/* ========================= COLUMN LAYOUT (large tables) ========================= */
+
+.table-editor-columns {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+}
+
+.table-editor-column-group {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.column-group-header {
+	font-size: 1rem;
+	font-weight: bold;
+	color: #ccc;
+	margin: 0;
+	padding-bottom: 6px;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.table-editor-column-group .table-editor-cell {
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	border-radius: 4px;
+}

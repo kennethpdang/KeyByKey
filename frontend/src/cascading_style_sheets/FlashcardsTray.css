@@ -1,263 +1,258 @@
 .tray-container {
-    box-sizing: border-box;
-    transition: width 0.3s ease;
-    width: 50px;
-    position: relative;
-    background-color: transparent;
-    padding: 0px 10px 10px 10px;
-    height: 100%;
-    overflow-y: scroll;
-    scrollbar-width: none; 
-    /* IE 10+ */
-    -ms-overflow-style: none; 
+	box-sizing: border-box;
+	transition: width 0.3s ease;
+	width: 50px;
+	position: relative;
+	background-color: transparent;
+	padding: 0px 10px 10px 10px;
+	height: 100%;
+	overflow-y: scroll;
+	scrollbar-width: none; 
+	-ms-overflow-style: none; 
 }
 
 .tray-container::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Opera */
+	display: none;
 }
 
 .tray-container.open {
-    width: 250px;
-    border-right: 1px solid #ccc;
+	width: 250px;
+	border-right: 1px solid #ccc;
 }
 
 /* Header with three sections: left (toggle), center (title), right (add icon) */
 .tray-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 32px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    top: 0;
-    position: sticky;
-    z-index: 1;
-    background-color: #0E1113;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	height: 32px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	top: 0;
+	position: sticky;
+	z-index: 1;
+	background-color: #0E1113;
 }
 
 .header-left,
 .header-center,
 .header-right {
-    flex: 1;
-    display: flex;
-    align-items: center;
+	flex: 1;
+	display: flex;
+	align-items: center;
 }
 
 .header-center {
-    justify-content: center;
+	justify-content: center;
 }
 
 .header-right {
-    justify-content: flex-end;
+	justify-content: flex-end;
 }
 
 .toggle-icon,
 .add-icon {
-    cursor: pointer;
+	cursor: pointer;
 }
 
 /* Toggle icon rotation styles */
-.toggle-icon i {
-    transition: transform 0.3s ease-in-out; /* Smooth rotation */
+.toggle-icon svg {
+	transition: transform 0.3s ease-in-out;
 }
-.toggle-icon i.rotate {
-    transform: rotate(-90deg); /* Rotate to the right when open */
+
+.toggle-icon svg.rotate {
+	transform: rotate(-90deg);
 }
-.toggle-icon i.closed {
-    transform: rotate(0deg); /* Default position when closed */
+
+.toggle-icon svg.closed {
+	transform: rotate(0deg);
 }
 
 /* Tray list and flashcard items */
 .tray-list {
-    margin-top: 10px;
-    overflow-y: auto;
+	margin-top: 10px;
+	overflow-y: auto;
 }
 
 .flashcard-item {
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
+	display: flex;
+	flex-direction: column;
+	padding: 10px;
+	border-bottom: 1px solid #ccc;
 }
 
 /* Container for flashcard header and delete button */
 .flashcard-header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
 }
 
 .flashcard-header {
-    font-size: 1.2rem;
-    font-weight: bold;
+	font-size: 1.2rem;
+	font-weight: bold;
 }
 
 .flashcard-category {
-    font-size: 0.9rem;
-    color: #bbbbbb;
-    margin-bottom: 5px;
+	font-size: 0.9rem;
+	color: #bbbbbb;
+	margin-bottom: 5px;
 }
 
 .flashcard-description {
-    font-size: 0.95rem;
-    line-height: 1.4;
-    color: #ffffff;
-    margin-bottom: 8px;
+	font-size: 0.95rem;
+	line-height: 1.4;
+	color: #ffffff;
+	margin-bottom: 8px;
 }
 
 .flashcard-due-date {
-    font-size: 0.85rem;
-    font-style: italic;
-    color: #aaaaaa;
-    margin-top: 5px;
+	font-size: 0.85rem;
+	font-style: italic;
+	color: #aaaaaa;
+	margin-top: 5px;
 }
 
 .delete-button {
-    background: none;
-    border: none;
-    color: red;
-    cursor: pointer;
+	background: none;
+	border: none;
+	color: red;
+	cursor: pointer;
 }
 
 /* Modal overlay to cover the entire screen and blur the background */
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(5px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.5);
+	backdrop-filter: blur(5px);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000;
 }
 
 /* Modal content box */
 .modal-content {
-    background: #1e1e1e;
-    padding: 2rem;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 500px;
-    position: relative;
+	background: #1e1e1e;
+	padding: 2rem;
+	border-radius: 8px;
+	width: 90%;
+	max-width: 500px;
+	position: relative;
 }
 
 /* Header of the modal with exit button */
 .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 1rem;
 }
 
 .exit-button {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: #fff;
-    cursor: pointer;
+	background: none;
+	border: none;
+	font-size: 1.5rem;
+	color: #fff;
+	cursor: pointer;
 }
 
 /* Form styling inside the modal */
 .modal-form .form-group {
-    margin-bottom: 1rem;
-    display: flex;
-    flex-direction: column;
+	margin-bottom: 1rem;
+	display: flex;
+	flex-direction: column;
 }
 
 .modal-form label {
-    margin-bottom: 0.5rem;
-    color: #fff;
+	margin-bottom: 0.5rem;
+	color: #fff;
 }
 
-/* Updated styling for inputs, textarea, and select for a consistent dark mode look */
+/* Consistent dark mode styling for inputs, textarea, and select */
 .modal-form input,
 .modal-form textarea,
 .modal-form select {
-    padding: 0.5rem;
-    border: 1px solid #555;
-    border-radius: 4px;
-    background-color: #2e2e2e;
-    color: #fff;
+	padding: 0.5rem;
+	border: 1px solid #555;
+	border-radius: 4px;
+	background-color: #2e2e2e;
+	color: #fff;
 }
 
 .submit-button {
-    background-color: #4caf50;
-    border: none;
-    color: #fff;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
+	background-color: #4caf50;
+	border: none;
+	color: #fff;
+	padding: 0.5rem 1rem;
+	border-radius: 4px;
+	cursor: pointer;
 }
 
 .modal-footer {
-    display: flex;
-    justify-content: right;
-    margin-top: 1rem;
+	display: flex;
+	justify-content: right;
+	margin-top: 1rem;
 }
 
 /* Style for both cancel and confirm buttons */
 .cancel-button, .confirm-button {
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    border: none;
-    cursor: pointer;
-    color: #fff;
+	padding: 0.5rem 1rem;
+	border-radius: 4px;
+	border: none;
+	cursor: pointer;
+	color: #fff;
 }
 
-/* Specific styling for the Cancel button */
 .cancel-button {
-    background-color: #aaa;
-    margin-right: 20px;
+	background-color: #aaa;
+	margin-right: 20px;
 }
 
-/* Specific styling for the Confirm button */
 .confirm-button {
-    background-color: red;
+	background-color: red;
 }
 
-/* New styling for delete confirmation modal to remove width constraints */
+/* Delete confirmation modal without width constraints */
 .delete-modal-content {
-    width: auto;
-    max-width: none;
+	width: auto;
+	max-width: none;
 }
 
 .action-buttons {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 0.5rem; /* Optional: add spacing between icons */
-    flex-direction: column;
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	gap: 0.5rem;
+	flex-direction: column;
 }
 
 .action-buttons button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
+	background: none;
+	border: none;
+	cursor: pointer;
+	padding: 0;
 }
 
-.fa-pen-to-square {
-    color: white;
-}
-
-.fas:hover {
-    scale: 1.2;
+/* Phosphor icon hover effect */
+.action-buttons button svg:hover {
+	transform: scale(1.2);
 }
 
 .flashcard-item,
 .flashcard-item * {
-  transition: opacity .15s ease;
+	transition: opacity .15s ease;
 }
 
 .flashcard-item[aria-selected="true"]:focus .flashcard-header,
 .flashcard-item[aria-selected="true"]:focus .flashcard-description,
 .flashcard-item[aria-selected="true"]:focus .flashcard-category,
 .flashcard-item[aria-selected="true"]:focus .flashcard-due-date,
-.flashcard-item[aria-selected="true"]:focus .fas,
-.flashcard-item[aria-selected="true"]:focus .far {
-  opacity: 0.85; /* “tiny dimmer” */
+.flashcard-item[aria-selected="true"]:focus svg {
+	opacity: 0.85;
 }
