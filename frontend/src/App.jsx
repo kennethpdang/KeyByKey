@@ -1,5 +1,9 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import React, { useEffect } from 'react';
+
+// Context
+import { AuthProvider } from "./context/AuthContext";
 
 // Components
 import Navbar from "./components/Navbar";
@@ -9,6 +13,8 @@ import Home from "./pages/Home";
 import FlashcardCategories from "./pages/FlashcardCategories";
 import Memorize from "./pages/Memorize";
 import AboutUs from "./pages/AboutUs";
+
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 function App() {
 	useEffect(() => {
@@ -25,17 +31,21 @@ function App() {
 	}, []);
 
 	return (
-		<div className="App">
-			<BrowserRouter>
-				<Navbar />
-				<Routes>
-					<Route path="/" element={<Home />} />
-					<Route path="/memorize/:id?" element={<Memorize />} />
-					<Route path="/flashcard-categories" element={<FlashcardCategories />} />
-					<Route path="/about-us" element={<AboutUs />} />
-				</Routes>
-			</BrowserRouter>
-		</div>
+		<GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+			<AuthProvider>
+				<div className="App">
+					<BrowserRouter>
+						<Navbar />
+						<Routes>
+							<Route path="/" element={<Home />} />
+							<Route path="/memorize/:id?" element={<Memorize />} />
+							<Route path="/flashcard-categories" element={<FlashcardCategories />} />
+							<Route path="/about-us" element={<AboutUs />} />
+						</Routes>
+					</BrowserRouter>
+				</div>
+			</AuthProvider>
+		</GoogleOAuthProvider>
 	);
 }
 

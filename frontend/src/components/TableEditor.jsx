@@ -13,11 +13,12 @@ function buildEmptyTable(rows, cols) {
 
 /**
  * Determines whether the table should render as a grid or as a column-by-column list.
- * Grid layout is used when the smaller dimension is 3 or under.
- * Column layout is used for everything else (4x4 and larger in both dimensions).
+ * Grid layout is used when the smaller dimension is 3 or under
+ * AND the larger dimension is 5 or under.
+ * Column layout is used for everything else.
  */
 function shouldUseGridLayout(rows, cols) {
-	return Math.min(rows, cols) <= 3;
+	return Math.min(rows, cols) <= 3 && Math.max(rows, cols) <= 5;
 }
 
 export default function TableEditor({ rows, cols, value, onChange }) {
@@ -74,9 +75,10 @@ export default function TableEditor({ rows, cols, value, onChange }) {
 	const renderCellEditor = (rowIndex, colIndex, label) => {
 		const cell = value.cells?.[rowIndex]?.[colIndex] || { text: "", prefilled: false };
 		const cellId = `cell-${rowIndex}-${colIndex}`;
+		const cellClassName = `table-editor-cell${cell.prefilled ? " prefilled-cell" : ""}`;
 
 		return (
-			<div key={cellId} className="table-editor-cell">
+			<div key={cellId} className={cellClassName}>
 				<div className="cell-editor-header">
 					{label && <span className="cell-label">{label}</span>}
 					<label className="prefill-toggle" htmlFor={`${cellId}-prefill`}>
@@ -102,33 +104,37 @@ export default function TableEditor({ rows, cols, value, onChange }) {
 
 	const renderGridLayout = () => {
 		return (
-			<table className="table-editor-table">
-				<tbody>
-					{Array.from({ length: rows }).map((_, rowIndex) => (
-						<tr key={rowIndex}>
-							{Array.from({ length: cols }).map((_, colIndex) => (
-								<td key={colIndex}>
-									{renderCellEditor(rowIndex, colIndex, `Row ${rowIndex + 1}, Col ${colIndex + 1}`)}
-								</td>
-							))}
-						</tr>
-					))}
-				</tbody>
-			</table>
+			<div className="table-editor-grid-wrapper">
+				<table className="table-editor-table">
+					<tbody>
+						{Array.from({ length: rows }).map((_, rowIndex) => (
+							<tr key={rowIndex}>
+								{Array.from({ length: cols }).map((_, colIndex) => (
+									<td key={colIndex}>
+										{renderCellEditor(rowIndex, colIndex, `Row ${rowIndex + 1}, Col ${colIndex + 1}`)}
+									</td>
+								))}
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
 		);
 	};
 
 	const renderColumnLayout = () => {
 		return (
-			<div className="table-editor-columns">
-				{Array.from({ length: cols }).map((_, colIndex) => (
-					<div key={colIndex} className="table-editor-column-group">
-						<h3 className="column-group-header">Column {colIndex + 1}</h3>
-						{Array.from({ length: rows }).map((_, rowIndex) => (
-							renderCellEditor(rowIndex, colIndex, `Row ${rowIndex + 1}`)
-						))}
-					</div>
-				))}
+			<div className="table-editor-columns-wrapper">
+				<div className="table-editor-columns">
+					{Array.from({ length: cols }).map((_, colIndex) => (
+						<div key={colIndex} className="table-editor-column-group">
+							<h3 className="column-group-header">Column {colIndex + 1}</h3>
+							{Array.from({ length: rows }).map((_, rowIndex) => (
+								renderCellEditor(rowIndex, colIndex, `Row ${rowIndex + 1}`)
+							))}
+						</div>
+					))}
+				</div>
 			</div>
 		);
 	};

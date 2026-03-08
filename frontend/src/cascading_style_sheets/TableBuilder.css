@@ -64,11 +64,11 @@
 	transform: scale(1.03);
 }
 
-/* Shared cell editor styles */
+/* ========================= SHARED CELL STYLES ========================= */
+
 .table-editor-cell {
 	display: flex;
 	flex-direction: column;
-	padding: 6px;
 	gap: 4px;
 }
 
@@ -76,6 +76,7 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+	padding: 6px 8px 0 8px;
 }
 
 .cell-label {
@@ -106,30 +107,97 @@
 	resize: none;
 	overflow: hidden;
 	box-sizing: border-box;
-	padding: 4px;
+	padding: 6px 8px;
 	line-height: 1.4;
+}
+
+/* Prefilled cell styling */
+.table-editor-cell.prefilled-cell {
+	background-color: rgba(255, 255, 255, 0.04);
 }
 
 /* ========================= GRID LAYOUT (small tables) ========================= */
 
+/* Scrollable wrapper for grid layout */
+.table-editor-grid-wrapper {
+	max-height: 230px;
+	overflow-y: auto;
+	padding-right: 4px;
+
+	/* Dark scrollbar — Firefox */
+	scrollbar-width: thin;
+	scrollbar-color: #444 #1a1a1a;
+}
+
+/* Dark scrollbar — Chrome, Safari, Edge */
+.table-editor-grid-wrapper::-webkit-scrollbar {
+	width: 8px;
+}
+
+.table-editor-grid-wrapper::-webkit-scrollbar-track {
+	background: #1a1a1a;
+	border-radius: 4px;
+}
+
+.table-editor-grid-wrapper::-webkit-scrollbar-thumb {
+	background: #444;
+	border-radius: 4px;
+}
+
+.table-editor-grid-wrapper::-webkit-scrollbar-thumb:hover {
+	background: #555;
+}
+
 .table-editor-table {
-	border-collapse: collapse;
+	border-collapse: separate;
+	border-spacing: 6px;
 	width: 100%;
 	max-width: 100%;
 }
 
 .table-editor-table td {
 	border: 1px solid rgba(255, 255, 255, 0.2);
+	border-radius: 8px;
 	padding: 0;
 	vertical-align: top;
+	overflow: hidden;
 }
 
-/* In grid mode, hide the cell label to save space — the position is obvious */
+/* In grid mode, hide the cell label to save space */
 .table-editor-table .cell-label {
 	display: none;
 }
 
 /* ========================= COLUMN LAYOUT (large tables) ========================= */
+
+.table-editor-columns-wrapper {
+	max-height: 230px;
+	overflow-y: auto;
+	padding-right: 4px;
+
+	/* Dark scrollbar — Firefox */
+	scrollbar-width: thin;
+	scrollbar-color: #444 #1a1a1a;
+}
+
+/* Dark scrollbar — Chrome, Safari, Edge */
+.table-editor-columns-wrapper::-webkit-scrollbar {
+	width: 8px;
+}
+
+.table-editor-columns-wrapper::-webkit-scrollbar-track {
+	background: #1a1a1a;
+	border-radius: 4px;
+}
+
+.table-editor-columns-wrapper::-webkit-scrollbar-thumb {
+	background: #444;
+	border-radius: 4px;
+}
+
+.table-editor-columns-wrapper::-webkit-scrollbar-thumb:hover {
+	background: #555;
+}
 
 .table-editor-columns {
 	display: flex;
@@ -140,7 +208,7 @@
 .table-editor-column-group {
 	display: flex;
 	flex-direction: column;
-	gap: 4px;
+	gap: 6px;
 }
 
 .column-group-header {
@@ -154,5 +222,6 @@
 
 .table-editor-column-group .table-editor-cell {
 	border: 1px solid rgba(255, 255, 255, 0.2);
-	border-radius: 4px;
+	border-radius: 8px;
+	overflow: hidden;
 }
