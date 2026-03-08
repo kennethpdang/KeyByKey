@@ -23,11 +23,13 @@ const app = express();
 app.use(express.json());
 app.use(morgan(':method :url :status'));
 app.use(cors({
-	origin: 'http://localhost:3000',
+	origin: process.env.NODE_ENV === 'production'
+		? process.env.CLIENT_URL
+		: 'http://localhost:3000',
 	credentials: true
 }));
 
-// Session configuration — stores sessions in MongoDB so they persist across restarts.
+// Session configuration
 app.use(session({
 	secret: process.env.SESSION_SECRET,
 	resave: false,
@@ -35,33 +37,34 @@ app.use(session({
 	store: MongoStore.create({
 		mongoUrl: process.env.MongoDB_URL,
 		collectionName: 'sessions',
-		ttl: 7 * 24 * 60 * 60 // Sessions expire after 7 days
+		ttl: 7 * 24 * 60 * 60
 	}),
 	cookie: {
-		maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
+		maxAge: 7 * 24 * 60 * 60 * 1000,
 		httpOnly: true,
-		secure: false, // Set to true in production with HTTPS
-		sameSite: 'lax'
+		secure: process.env.NODE_ENV === 'production',
+		sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
 	}
 }));
 
 // ========================= ROUTES =========================
 
-// Auth routes are public (no auth middleware).
 app.use('/api/auth', authRoutes);
-
-// Collection and flashcard routes require authentication.
 app.use('/api/collections', requireAuth, collectionRoutes);
 app.use('/api/flashcards', requireAuth, flashcardRoutes);
 
 // ========================= DATABASE & SERVER =========================
 
 mongoose.connect(process.env.MongoDB_URL)
-	.then(() => {
-		console.log('Connected to the database.');
-
-		app.listen(process.env.PORT, () => {
-			console.log(`Listening to requests on port ${process.env.PORT}`);
-		});
-	})
+	.then(() => console.log('Connected to the database.'))
 	.catch((error) => console.log(error));
+
+// Export for Vercel serverless
+module.exports = app;
+
+// Only listen locally in development
+if (process.env.NODE_ENV !== 'production') {
+	app.listen(process.env.PORT, () => {
+		console.log(`Listening to requests on port ${process.env.PORT}`);
+	});
+}
