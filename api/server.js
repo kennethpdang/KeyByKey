@@ -15,6 +15,17 @@ const flashcardRoutes = require('./routes/flashcards.js');
 // Import Middleware
 // const requireAuth = require('./middleware/requireAuth.js');
 
+// TEMPORARY: bypass auth — remove when OAuth is restored
+const User = require('./models/userModel.js');
+const requireAuth = async (request, response, next) => {
+    const user = await User.findOne({ email: 'kennethpdang@gmail.com' });
+    if (!user) {
+        return response.status(500).json({ error: 'Temp user not found' });
+    }
+    request.user = user;
+    next();
+};
+
 // Create express app
 const app = express();
 app.set('trust proxy', 1);
