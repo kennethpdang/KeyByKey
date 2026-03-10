@@ -152,10 +152,16 @@ const InteractiveMemorization = ({ hiddenText, mode = "BRAIN", flashcardId, onRe
 
 	const isGuidedMode = mode !== "BRAIN";
 
+	const screenClassName = [
+		"screen",
+		isGuidedMode ? "guided" : "",
+		isLongContent ? "long-content-screen" : ""
+	].filter(Boolean).join(" ");
+
 	return (
 		<div
 			ref={screenRef}
-			className={`screen ${isGuidedMode ? "guided" : ""}`}
+			className={screenClassName}
 			tabIndex={0}
 			onClick={focusScreen}
 		>
