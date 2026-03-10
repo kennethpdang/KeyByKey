@@ -62,8 +62,11 @@ app.use(session({
 // ========================= ROUTES =========================
 
 app.use('/api/auth', authRoutes);
-app.use('/api/collections', requireAuth, collectionRoutes);
-app.use('/api/flashcards', requireAuth, flashcardRoutes);
+app.use('/api/collections', tempAuth, collectionRoutes);
+app.use('/api/flashcards', tempAuth, flashcardRoutes);
+// Put back after resolved.
+// app.use('/api/collections', requireAuth, collectionRoutes);
+// app.use('/api/flashcards', requireAuth, flashcardRoutes);
 
 // ========================= DATABASE & SERVER =========================
 
