@@ -47,7 +47,7 @@ overflow: hidden;
 
 .memo-table { 
     border-collapse: collapse; 
-    background: #1a1d21;
+    background: #1a1a1a;
     width: 100%;
     border-radius: 12px;
     overflow: hidden;
@@ -56,22 +56,22 @@ overflow: hidden;
 
 .memo-table td { 
 vertical-align: top;
-border: none;
+border: 1px solid rgba(255, 255, 255, 0.08);
 padding: 0;
 }
 
 /* Alternating row colors for non-prefilled rows */
 .memo-table tr:nth-child(even) td {
-background-color: #242832;
+background-color: #1e1e1e;
 }
 
 .memo-table tr:nth-child(odd) td {
-background-color: #1a1d21;
+background-color: #1a1a1a;
 }
 
 /* Override for prefilled cells */
 .memo-table td .cell.prefilled {
-background-color: #2d3748 !important;
+background-color: #2e2e2e !important;
 min-height: 60px;
 padding: 8px 10px;
 box-sizing: border-box;
@@ -87,23 +87,23 @@ word-break: break-word;
 color: #fff;
 font-size: 1.2rem;
 line-height: 1.4;
-font-weight: bold; /* Added bold to match character styles */
-margin: 0 0.05rem; /* Added margin to match */
+font-weight: bold;
+margin: 0 0.05rem;
 width: 100%;
 overflow: hidden;
 }
 
 /* Prefilled row styling */
 .memo-table tr.prefilled-row td {
-background-color: #2d3748 !important;
+background-color: #2e2e2e !important;
 }
 
 /* Prefilled column styling */
 .memo-table td.prefilled-col {
-background-color: #2d3748 !important;
+background-color: #2e2e2e !important;
 }
 
-/* Guided cell styling - removed active state box-shadow */
+/* Guided cell styling */
 .guided-cell {
 position: relative;
 min-height: 60px;
@@ -129,13 +129,10 @@ justify-content: center;
 text-align: center;
 }
 
-/* Remove all background changes for focus and completed states */
 .guided-cell:focus {
-/* No background change on focus */
 }
 
 .guided-cell.completed {
-/* No background change when completed */
 }
 
 .cell-content {
@@ -154,10 +151,10 @@ font-size: 1.2rem;
 /* Table-specific character styling */
 .table-screen .character {
 font-size: 1.2rem;
-font-weight: bold; /* Added bold */
-margin: 0 0.05rem; /* Changed from 0 to 0.05rem */
+font-weight: bold;
+margin: 0 0.05rem;
 color: #fff;
-opacity: 0.4; /* Baseline text is dimmed */
+opacity: 0.4;
 }
 
 .table-screen .character.correct {
@@ -180,7 +177,7 @@ opacity: 0;
 
 /* Brain mode placeholder - invisible but maintains space */
 .table-screen .character.brain-placeholder {
-visibility: hidden; /* Takes up space but is invisible */
+visibility: hidden;
 opacity: 0;
 }
 
@@ -190,8 +187,8 @@ display: inline;
 color: #4caf50;
 font-size: 1.2rem;
 animation: blink 1s infinite;
-margin: 0; /* Remove any margin */
-font-weight: normal; /* Override bold from character */
+margin: 0;
+font-weight: normal;
 }
 
 @keyframes blink {

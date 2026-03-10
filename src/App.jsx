@@ -39,8 +39,8 @@ function App() {
 						<Navbar />
 						<Routes>
 							<Route path="/" element={<Home />} />
-							<Route path="/memorize/:id?" element={<Memorize />} />
-							<Route path="/flashcard-categories" element={<FlashcardCategories />} />
+							<Route path="/memorize/:id?" element={<ProtectedRoute><Memorize /></ProtectedRoute>} />
+							<Route path="/flashcard-categories" element={<ProtectedRoute><FlashcardCategories /></ProtectedRoute>} />
 							<Route path="/about-us" element={<AboutUs />} />
 						</Routes>
 					</BrowserRouter>

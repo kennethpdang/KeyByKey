@@ -102,6 +102,18 @@ export default function GuidedTableCell({
 	// ========================= TYPING HANDLER =========================
 
 	const handleKeyDown = useCallback((event) => {
+		const activeElement = document.activeElement;
+		const isInputFocused = activeElement && (
+			activeElement.tagName === 'INPUT' ||
+			activeElement.tagName === 'TEXTAREA' ||
+			activeElement.tagName === 'SELECT' ||
+			activeElement.contentEditable === 'true'
+		);
+
+		if (isInputFocused || document.querySelector('.modal-overlay')) {
+			return;
+		}
+
 		if (!isActive || completed || shaking) {
 			return;
 		}
