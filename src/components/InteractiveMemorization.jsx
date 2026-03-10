@@ -7,13 +7,13 @@ import useHiddenText from "../hooks/useHiddenText";
 import { buildSpinVisibility } from "../utils/textProcessing";
 import "../cascading_style_sheets/InteractiveMemorization.css";
 
-const CHARACTER_HEIGHT = 85;
+const CHARACTER_HEIGHT = 65;
 const TARGET_SCROLL_LINE = 7;
 const SCROLL_TRANSITION_MS = 250;
 
 const InteractiveMemorization = ({ hiddenText, mode = "BRAIN", flashcardId, onReviewed }) => {
 	const processedText = hiddenText;
-	const isLongContent = hiddenText.length > 600;
+	const isLongContent = hiddenText.length > 350;
 
 	const spinVisibility = useMemo(() => {
 		if (mode !== "SPIN") {
