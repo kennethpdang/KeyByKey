@@ -7,7 +7,7 @@ import useHiddenText from "../hooks/useHiddenText";
 import { buildSpinVisibility } from "../utils/textProcessing";
 import "../cascading_style_sheets/InteractiveMemorization.css";
 
-const CHARACTER_HEIGHT = 65;
+const CHARACTER_HEIGHT = 86;
 const TARGET_SCROLL_LINE = 7;
 const SCROLL_TRANSITION_MS = 250;
 

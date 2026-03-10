@@ -46,10 +46,7 @@ const flashcardSchema = new Schema({
 	},
 	content: {
 		type: String,
-		default: '',
-		required: function () {
-			return this.type !== 'table';
-		}
+		default: ''
 	},
 	collectionRef: {
 		type: mongoose.Schema.Types.ObjectId,
