@@ -13,7 +13,7 @@ const collectionRoutes = require('./routes/collections.js');
 const flashcardRoutes = require('./routes/flashcards.js');
 
 // Import Middleware
-const requireAuth = require('./middleware/requireAuth.js');
+// const requireAuth = require('./middleware/requireAuth.js');
 
 // Create express app
 const app = express();
